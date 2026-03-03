@@ -1,14 +1,12 @@
 using Libertas.Discord.Adventure.Core.GameModels;
-using Libertas.Discord.Adventure.Core.Services;
-using Libertas.Discord.Adventure.Core.Settings;
 using Libertas.Discord.Adventure.Core.Tests.TestUtilities;
 using NUnit.Framework;
 
 namespace Libertas.Discord.Adventure.Core.Tests;
 
 /// <summary>
-/// Tests for the bot system to ensure AI companions behave correctly and fairly.
-/// Bots should help players but not overshadow them or steal rewards.
+///     Tests for the bot system to ensure AI companions behave correctly and fairly.
+///     Bots should help players but not overshadow them or steal rewards.
 /// </summary>
 [TestFixture]
 [Category("Bots")]
@@ -20,10 +18,8 @@ public class BotSystemTests
         TestEntityFactory.ResetIdCounters();
     }
 
-    #region Bot Generation Tests
-
     /// <summary>
-    /// Verifies that bots are generated when party is below minimum size.
+    ///     Verifies that bots are generated when party is below minimum size.
     /// </summary>
     [Test]
     public async Task BotInjection_FillsPartyToMinimumSize()
@@ -53,7 +49,7 @@ public class BotSystemTests
     }
 
     /// <summary>
-    /// Verifies that no bots are generated when party is already at minimum size.
+    ///     Verifies that no bots are generated when party is already at minimum size.
     /// </summary>
     [Test]
     public async Task BotInjection_NoBotsWhenPartyFull()
@@ -73,7 +69,7 @@ public class BotSystemTests
     }
 
     /// <summary>
-    /// Verifies that bots persist between rounds (same bots, not regenerated).
+    ///     Verifies that bots persist between rounds (same bots, not regenerated).
     /// </summary>
     [Test]
     public async Task BotPersistence_SameBotsAcrossRounds()
@@ -102,18 +98,18 @@ public class BotSystemTests
     }
 
     /// <summary>
-    /// Verifies that bot stats scale appropriately with dungeon level.
+    ///     Verifies that bot stats scale appropriately with dungeon level.
     /// </summary>
     [Test]
     public void BotStats_ScaleWithLevel()
     {
         // Arrange
-        var rng = TestServiceFactory.CreateRng(seed: 12345);
+        var rng = TestServiceFactory.CreateRng(12345);
         var botService = TestServiceFactory.CreateBotService(rng);
 
         // Act - generate bots for different levels
-        var level1Bots = botService.GenerateBotsForParty([], dungeonLevel: 1);
-        var level10Bots = botService.GenerateBotsForParty([], dungeonLevel: 10);
+        var level1Bots = botService.GenerateBotsForParty([], 1);
+        var level10Bots = botService.GenerateBotsForParty([], 10);
 
         // Assert
         var avgHpLevel1 = level1Bots.Average(b => b.MaxHp);
@@ -127,17 +123,17 @@ public class BotSystemTests
     }
 
     /// <summary>
-    /// Verifies that bot names are unique (no duplicates in same party).
+    ///     Verifies that bot names are unique (no duplicates in same party).
     /// </summary>
     [Test]
     public void BotNames_AreUnique()
     {
         // Arrange
-        var rng = TestServiceFactory.CreateRng(seed: 54321);
+        var rng = TestServiceFactory.CreateRng(54321);
         var botService = TestServiceFactory.CreateBotService(rng);
 
         // Act - generate 4 bots (should exhaust some names)
-        var bots = botService.GenerateBotsForParty([], dungeonLevel: 5);
+        var bots = botService.GenerateBotsForParty([], 5);
 
         // Assert
         var names = bots.Select(b => b.Name).ToList();
@@ -149,22 +145,18 @@ public class BotSystemTests
             "All bot names should be unique");
     }
 
-    #endregion
-
-    #region Bot AI Behavior Tests
-
     /// <summary>
-    /// Verifies that bots make sensible combat decisions.
+    ///     Verifies that bots make sensible combat decisions.
     /// </summary>
     [Test]
     public void BotAI_MakesSensibleDecisions()
     {
         // Arrange
-        var rng = TestServiceFactory.CreateRng(seed: 11111);
+        var rng = TestServiceFactory.CreateRng(11111);
         var botService = TestServiceFactory.CreateBotService(rng);
 
         var bot = TestEntityFactory.CreatePlayer("TestBot", isBot: true);
-        var injuredAlly = TestEntityFactory.CreateInjuredPlayer("Wounded", currentHp: 5);
+        var injuredAlly = TestEntityFactory.CreateInjuredPlayer("Wounded", 5);
         var healthyAlly = TestEntityFactory.CreateWarrior("Healthy");
         var mob = TestEntityFactory.CreateStandardMob();
 
@@ -196,13 +188,13 @@ public class BotSystemTests
     }
 
     /// <summary>
-    /// Verifies that bots never choose to Run (would abandon the party).
+    ///     Verifies that bots never choose to Run (would abandon the party).
     /// </summary>
     [Test]
     public void BotAI_NeverRuns()
     {
         // Arrange
-        var rng = TestServiceFactory.CreateRng(seed: 99999);
+        var rng = TestServiceFactory.CreateRng(99999);
         var botService = TestServiceFactory.CreateBotService(rng);
 
         var bot = TestEntityFactory.CreatePlayer("TestBot", isBot: true);
@@ -227,12 +219,8 @@ public class BotSystemTests
             "Bots should never abandon the party by running");
     }
 
-    #endregion
-
-    #region Bot Fairness Tests
-
     /// <summary>
-    /// Verifies that bots do NOT receive loot (all gold goes to human players).
+    ///     Verifies that bots do NOT receive loot (all gold goes to human players).
     /// </summary>
     [Test]
     public async Task BotLoot_BotsDoNotReceiveGold()
@@ -247,11 +235,11 @@ public class BotSystemTests
 
         // Act - run until mob dies
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: [player],
-            mobs: [mob],
-            actions: actions,
-            maxRounds: 10,
+            1,
+            [player],
+            [mob],
+            actions,
+            10,
             verbose: true);
 
         // Assert
@@ -267,8 +255,8 @@ public class BotSystemTests
     }
 
     /// <summary>
-    /// Verifies that bots don't make the game trivially easy.
-    /// The party should still face meaningful challenges.
+    ///     Verifies that bots don't make the game trivially easy.
+    ///     The party should still face meaningful challenges.
     /// </summary>
     [Test]
     public async Task BotBalance_GameRemainsChallenging()
@@ -282,11 +270,11 @@ public class BotSystemTests
 
         // Act - run 100 rounds with scaling mobs to see progression
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: [player],
-            mobs: [TestEntityFactory.CreateScaledMob(1)],
-            actions: actions,
-            maxRounds: 100,
+            1,
+            [player],
+            [TestEntityFactory.CreateScaledMob(1)],
+            actions,
+            100,
             respawnFunc: (_, level) => [TestEntityFactory.CreateScaledMob(level)],
             verbose: false);
 
@@ -302,6 +290,4 @@ public class BotSystemTests
         // Document the actual balance point (for tuning reference)
         Assert.Pass($"Game balanced: reached level {result.FinalLevel}, earned {result.TotalGoldEarned:F0} gold");
     }
-
-    #endregion
 }

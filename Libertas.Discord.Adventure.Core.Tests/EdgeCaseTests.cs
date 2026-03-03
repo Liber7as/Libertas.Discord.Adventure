@@ -1,13 +1,16 @@
 using Libertas.Discord.Adventure.Core.GameModels;
 using Libertas.Discord.Adventure.Core.Services;
+using Libertas.Discord.Adventure.Core.Settings;
 using Libertas.Discord.Adventure.Core.Tests.TestUtilities;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace Libertas.Discord.Adventure.Core.Tests;
 
 /// <summary>
-/// Tests for edge cases and boundary conditions.
-/// These tests ensure the game handles unusual situations gracefully.
+///     Tests for edge cases and boundary conditions.
+///     These tests ensure the game handles unusual situations gracefully.
 /// </summary>
 [TestFixture]
 [Category("EdgeCases")]
@@ -19,10 +22,8 @@ public class EdgeCaseTests
         TestEntityFactory.ResetIdCounters();
     }
 
-    #region Empty/Zero State Tests
-
     /// <summary>
-    /// Verifies the game handles a round with no players gracefully.
+    ///     Verifies the game handles a round with no players gracefully.
     /// </summary>
     [Test]
     public async Task NoPlayers_HandledGracefully()
@@ -42,7 +43,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies the game handles a round with no mobs gracefully.
+    ///     Verifies the game handles a round with no mobs gracefully.
     /// </summary>
     [Test]
     public async Task NoMobs_HandledGracefully()
@@ -62,7 +63,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies handling when all players are already dead.
+    ///     Verifies handling when all players are already dead.
     /// </summary>
     [Test]
     public async Task AllPlayersDead_NoActionsProcessed()
@@ -82,7 +83,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies handling when all mobs are already dead.
+    ///     Verifies handling when all mobs are already dead.
     /// </summary>
     [Test]
     public async Task AllMobsDead_NoMobActionsProcessed()
@@ -101,12 +102,8 @@ public class EdgeCaseTests
             "Dead mobs should not deal damage");
     }
 
-    #endregion
-
-    #region Extreme Stat Tests
-
     /// <summary>
-    /// Verifies the game handles extremely high stats without overflow.
+    ///     Verifies the game handles extremely high stats without overflow.
     /// </summary>
     [Test]
     public async Task ExtremelyHighStats_NoOverflow()
@@ -115,14 +112,14 @@ public class EdgeCaseTests
         var engine = TestServiceFactory.CreateGameEngineWithoutBots();
         var superPlayer = TestEntityFactory.CreatePlayer(
             "Demigod",
-            maxHp: 1000000,
-            currentHp: 1000000,
-            attackPower: 10000,
-            magicPower: 10000,
-            speechPower: 10000,
-            defensePower: 10000);
+            1000000,
+            1000000,
+            10000,
+            10000,
+            10000,
+            10000);
 
-        var superMob = TestEntityFactory.CreateMob("Titan", maxHp: 1000000, currentHp: 1000000, attackPower: 10000);
+        var superMob = TestEntityFactory.CreateMob("Titan", 1000000, 1000000, 10000);
         var originalMobHp = superMob.CurrentHp; // Save before combat (mutable class)
         var actions = new Dictionary<PlayerId, PlayerAction> { [superPlayer.Id] = PlayerAction.Attack };
 
@@ -134,7 +131,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies the game handles minimum stats (1 power, 1 HP).
+    ///     Verifies the game handles minimum stats (1 power, 1 HP).
     /// </summary>
     [Test]
     public async Task MinimumStats_GameStillFunctions()
@@ -143,14 +140,14 @@ public class EdgeCaseTests
         var engine = TestServiceFactory.CreateGameEngineWithoutBots();
         var weakPlayer = TestEntityFactory.CreatePlayer(
             "Peasant",
-            maxHp: 1,
-            currentHp: 1,
-            attackPower: 1,
-            magicPower: 1,
-            speechPower: 1,
-            defensePower: 0);
+            1,
+            1,
+            1,
+            1,
+            1,
+            0);
 
-        var weakMob = TestEntityFactory.CreateMob("Rat", maxHp: 1, currentHp: 1, attackPower: 1);
+        var weakMob = TestEntityFactory.CreateMob("Rat", 1, 1, 1);
         var actions = new Dictionary<PlayerId, PlayerAction> { [weakPlayer.Id] = PlayerAction.Attack };
 
         // Act
@@ -162,7 +159,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies very high level scaling doesn't break the game.
+    ///     Verifies very high level scaling doesn't break the game.
     /// </summary>
     [Test]
     public async Task VeryHighLevel_ScalingDoesNotBreak()
@@ -183,12 +180,8 @@ public class EdgeCaseTests
         TestContext.WriteLine($"Level 100 round executed with {result.Messages.Count} messages");
     }
 
-    #endregion
-
-    #region Player Action Edge Cases
-
     /// <summary>
-    /// Verifies that a player with no action specified defaults to Run.
+    ///     Verifies that a player with no action specified defaults to Run.
     /// </summary>
     [Test]
     public async Task MissingAction_DefaultsToRun()
@@ -212,7 +205,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies heal with only self (no other targets) reports no target.
+    ///     Verifies heal with only self (no other targets) reports no target.
     /// </summary>
     [Test]
     public async Task HealSelf_WhenOnlyPlayerAndFullHp_ReportsNoTarget()
@@ -232,7 +225,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies that attacking with no mobs alive does nothing harmful.
+    ///     Verifies that attacking with no mobs alive does nothing harmful.
     /// </summary>
     [Test]
     public async Task AttackNoTarget_DoesNothing()
@@ -250,28 +243,24 @@ public class EdgeCaseTests
         Assert.That(result.Messages.Count, Is.GreaterThan(0));
     }
 
-    #endregion
-
-    #region Bot Edge Cases
-
     /// <summary>
-    /// Verifies bot generation when all names are exhausted.
+    ///     Verifies bot generation when all names are exhausted.
     /// </summary>
     [Test]
     public void BotNames_FallbackWhenExhausted()
     {
         // Arrange - settings with very few names
-        var settings = new Settings.BotSettings
+        var settings = new BotSettings
         {
             MinimumPartySize = 10,
             BotNames = ["OnlyName"]
         };
 
-        var rng = TestServiceFactory.CreateRng(seed: 12345);
-        var botService = new BotService(rng, Microsoft.Extensions.Options.Options.Create(settings), Microsoft.Extensions.Logging.Abstractions.NullLogger<BotService>.Instance);
+        var rng = TestServiceFactory.CreateRng(12345);
+        var botService = new BotService(rng, Options.Create(settings), NullLogger<BotService>.Instance);
 
         // Act - need 10 bots but only 1 name
-        var bots = botService.GenerateBotsForParty([], dungeonLevel: 5);
+        var bots = botService.GenerateBotsForParty([], 5);
 
         // Assert - should not crash, should have fallback names
         Assert.That(bots, Has.Count.EqualTo(10));
@@ -286,13 +275,13 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies bot level calculation doesn't go negative.
+    ///     Verifies bot level calculation doesn't go negative.
     /// </summary>
     [Test]
     public void BotLevel_NeverNegative()
     {
         // Arrange
-        var settings = new Settings.BotSettings
+        var settings = new BotSettings
         {
             MinimumPartySize = 4,
             StatLevelVariance = 10, // High variance
@@ -304,11 +293,11 @@ public class EdgeCaseTests
             BotNames = ["Bot1", "Bot2", "Bot3", "Bot4"]
         };
 
-        var rng = TestServiceFactory.CreateRng(seed: 99999);
-        var botService = new BotService(rng, Microsoft.Extensions.Options.Options.Create(settings), Microsoft.Extensions.Logging.Abstractions.NullLogger<BotService>.Instance);
+        var rng = TestServiceFactory.CreateRng(99999);
+        var botService = new BotService(rng, Options.Create(settings), NullLogger<BotService>.Instance);
 
         // Act - level 1 with high variance could try to go negative
-        var bots = botService.GenerateBotsForParty([], dungeonLevel: 1);
+        var bots = botService.GenerateBotsForParty([], 1);
 
         // Assert - all bots should have valid positive stats
         foreach (var bot in bots)
@@ -318,12 +307,8 @@ public class EdgeCaseTests
         }
     }
 
-    #endregion
-
-    #region Concurrent/Multiple Mob Tests
-
     /// <summary>
-    /// Verifies game handles multiple mobs correctly.
+    ///     Verifies game handles multiple mobs correctly.
     /// </summary>
     [Test]
     public async Task MultipleMobs_AllCanAttack()
@@ -348,7 +333,7 @@ public class EdgeCaseTests
     }
 
     /// <summary>
-    /// Verifies player attacks only hit one mob at a time.
+    ///     Verifies player attacks only hit one mob at a time.
     /// </summary>
     [Test]
     public async Task PlayerAttack_HitsOnlyOneMob()
@@ -356,7 +341,7 @@ public class EdgeCaseTests
         // Arrange
         var engine = TestServiceFactory.CreateGameEngineWithoutBots();
         var player = TestEntityFactory.CreateWarrior();
-        var mobs = TestEntityFactory.CreateMobSwarm(3);
+        var mobs = TestEntityFactory.CreateMobSwarm();
         var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Attack };
 
         // Act
@@ -367,6 +352,4 @@ public class EdgeCaseTests
         Assert.That(damagedMobs, Is.EqualTo(1),
             "Attack should only hit one mob");
     }
-
-    #endregion
 }

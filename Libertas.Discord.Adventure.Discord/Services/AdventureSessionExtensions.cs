@@ -1,7 +1,7 @@
 namespace Libertas.Discord.Adventure.Discord.Services;
 
 /// <summary>
-/// Convenience extensions for acquiring and using per-session locks safely.
+///     Convenience extensions for acquiring and using per-session locks safely.
 /// </summary>
 public static class AdventureSessionExtensions
 {

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace Libertas.Discord.Adventure.Core.Services.Phases;
 
 /// <summary>
-/// Handles the bot injection phase of the round, ensuring the party meets the minimum size.
+///     Handles the bot injection phase of the round, ensuring the party meets the minimum size.
 /// </summary>
 public class BotPhaseProcessor(IBotService botService, ILogger<BotPhaseProcessor> logger)
 {
@@ -12,7 +12,7 @@ public class BotPhaseProcessor(IBotService botService, ILogger<BotPhaseProcessor
     private readonly ILogger<BotPhaseProcessor> _logger = logger;
 
     /// <summary>
-    /// Injects AI companion bots if the party is below the minimum size.
+    ///     Injects AI companion bots if the party is below the minimum size.
     /// </summary>
     public List<PlayerState> InjectBotsIfNeeded(List<PlayerState> playerList, int level)
     {

@@ -6,19 +6,16 @@ using NUnit.Framework;
 namespace Libertas.Discord.Adventure.Core.Tests;
 
 /// <summary>
-/// Tests for loot distribution to ensure gold is split fairly among players.
-/// Key fairness criteria:
-/// - Gold is split evenly among surviving human players
-/// - Bots receive no gold
-/// - Remainder gold is "lost" (not unfairly given to one player)
+///     Tests for loot distribution to ensure gold is split fairly among players.
+///     Key fairness criteria:
+///     - Gold is split evenly among surviving human players
+///     - Bots receive no gold
+///     - Remainder gold is "lost" (not unfairly given to one player)
 /// </summary>
 [TestFixture]
 [Category("Loot")]
 public class LootDistributionTests
 {
-    private IGameEngine _engine = null!;
-    private TestGameRunner _runner = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -27,8 +24,11 @@ public class LootDistributionTests
         _runner = new TestGameRunner(_engine);
     }
 
+    private IGameEngine _engine = null!;
+    private TestGameRunner _runner = null!;
+
     /// <summary>
-    /// Verifies that gold is split evenly among all surviving players.
+    ///     Verifies that gold is split evenly among all surviving players.
     /// </summary>
     [Test]
     public async Task LootSplit_EvenDistributionAmongSurvivors()
@@ -45,11 +45,11 @@ public class LootDistributionTests
 
         // Act - run until mob dies
         var result = await _runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: players,
-            mobs: [mob],
-            actions: actions,
-            maxRounds: 10,
+            1,
+            players,
+            [mob],
+            actions,
+            10,
             verbose: true);
 
         // Assert
@@ -64,7 +64,7 @@ public class LootDistributionTests
     }
 
     /// <summary>
-    /// Verifies that only human players receive loot, not bots.
+    ///     Verifies that only human players receive loot, not bots.
     /// </summary>
     [Test]
     public async Task LootSplit_OnlyHumansReceiveGold()
@@ -79,11 +79,11 @@ public class LootDistributionTests
 
         // Act
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: [player],
-            mobs: [mob],
-            actions: actions,
-            maxRounds: 10,
+            1,
+            [player],
+            [mob],
+            actions,
+            10,
             verbose: true);
 
         // Assert
@@ -99,8 +99,8 @@ public class LootDistributionTests
     }
 
     /// <summary>
-    /// Verifies that remainder gold (from uneven splits) is lost, not given to anyone.
-    /// This is important for fairness - no player should get bonus gold by chance.
+    ///     Verifies that remainder gold (from uneven splits) is lost, not given to anyone.
+    ///     This is important for fairness - no player should get bonus gold by chance.
     /// </summary>
     [Test]
     public async Task LootSplit_RemainderIsLost()
@@ -118,11 +118,11 @@ public class LootDistributionTests
         var actions = players.ToDictionary(p => p.Id, _ => PlayerAction.Attack);
 
         var result = await _runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: players,
-            mobs: [mob],
-            actions: actions,
-            maxRounds: 10,
+            1,
+            players,
+            [mob],
+            actions,
+            10,
             verbose: true);
 
         // Check if any remainder was lost (will appear in messages if gold wasn't perfectly divisible)
@@ -134,14 +134,14 @@ public class LootDistributionTests
     }
 
     /// <summary>
-    /// Verifies that dead players do not receive loot from subsequent kills.
+    ///     Verifies that dead players do not receive loot from subsequent kills.
     /// </summary>
     [Test]
     public async Task LootSplit_DeadPlayersReceiveNothing()
     {
         // Arrange - one player starts nearly dead
         var survivor = TestEntityFactory.CreateTank("Survivor");
-        var willDie = TestEntityFactory.CreatePlayer("Fragile", maxHp: 10, currentHp: 1, defensePower: 0);
+        var willDie = TestEntityFactory.CreatePlayer("Fragile", 10, 1, defensePower: 0);
 
         // Strong mob to ensure fragile player dies
         var mob = TestEntityFactory.CreateToughMob();
@@ -154,11 +154,11 @@ public class LootDistributionTests
 
         // Act - run multiple rounds
         var result = await _runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: [survivor, willDie],
-            mobs: [mob],
-            actions: actions,
-            maxRounds: 20,
+            1,
+            [survivor, willDie],
+            [mob],
+            actions,
+            20,
             respawnFunc: (_, level) => [TestEntityFactory.CreateWeakMob()], // Easy mob after first
             verbose: true);
 
@@ -175,8 +175,8 @@ public class LootDistributionTests
     }
 
     /// <summary>
-    /// Verifies that loot scales with dungeon level.
-    /// Higher level mobs should drop more gold.
+    ///     Verifies that loot scales with dungeon level.
+    ///     Higher level mobs should drop more gold.
     /// </summary>
     [Test]
     public async Task LootScaling_HigherLevelsMeanMoreGold()
@@ -193,11 +193,11 @@ public class LootDistributionTests
             var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Attack };
 
             var result = await _runner.ExecuteGameLoopAsync(
-                startLevel: 1,
-                players: [player],
-                mobs: [mob],
-                actions: actions,
-                maxRounds: 20,
+                1,
+                [player],
+                [mob],
+                actions,
+                20,
                 verbose: false);
 
             level1Gold += result.TotalGoldEarned;
@@ -216,11 +216,11 @@ public class LootDistributionTests
             var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Attack };
 
             var result = await _runner.ExecuteGameLoopAsync(
-                startLevel: 10,
-                players: [player],
-                mobs: [mob],
-                actions: actions,
-                maxRounds: 20,
+                10,
+                [player],
+                [mob],
+                actions,
+                20,
                 verbose: false);
 
             level10Gold += result.TotalGoldEarned;

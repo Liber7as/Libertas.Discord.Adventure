@@ -8,20 +8,20 @@ using Microsoft.Extensions.Options;
 namespace Libertas.Discord.Adventure.Discord;
 
 /// <summary>
-/// Background service that initializes and runs the Discord client and command modules.
+///     Background service that initializes and runs the Discord client and command modules.
 /// </summary>
 public sealed class DiscordBackgroundService(IOptions<DiscordSettings> options, ILogger<DiscordBackgroundService> logger, DiscordEventHandler eventHandler, DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider) : BackgroundService
 {
-    private readonly ILogger<DiscordBackgroundService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly DiscordSettings _settings = options?.Value ?? throw new ArgumentNullException(nameof(options));
-    private readonly DiscordEventHandler _eventHandler = eventHandler ?? throw new ArgumentNullException(nameof(eventHandler));
     private readonly DiscordSocketClient _client = client ?? throw new ArgumentNullException(nameof(client));
     private readonly CommandService _commandService = commandService;
+    private readonly DiscordEventHandler _eventHandler = eventHandler ?? throw new ArgumentNullException(nameof(eventHandler));
+    private readonly ILogger<DiscordBackgroundService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly DiscordSettings _settings = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
     /// <summary>
-    /// Starts the Discord client, registers command modules and wires up event handlers.
-    /// The method blocks until cancellation is requested.
+    ///     Starts the Discord client, registers command modules and wires up event handlers.
+    ///     The method blocks until cancellation is requested.
     /// </summary>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -61,7 +61,7 @@ public sealed class DiscordBackgroundService(IOptions<DiscordSettings> options, 
     }
 
     /// <summary>
-    /// Stops and logs out the Discord client if connected, then delegates to base.StopAsync.
+    ///     Stops and logs out the Discord client if connected, then delegates to base.StopAsync.
     /// </summary>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {

@@ -4,13 +4,13 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Discord;
 
 /// <summary>
-/// Extension methods for parsing Discord component custom IDs for player actions.
+///     Extension methods for parsing Discord component custom IDs for player actions.
 /// </summary>
 public static class SocketMessageComponentExtensions
 {
     /// <summary>
-    /// Attempts to parse an action custom id from the Discord component.
-    /// Expected format: "action-{actionValue}-{channelId}".
+    ///     Attempts to parse an action custom id from the Discord component.
+    ///     Expected format: "action-{actionValue}-{channelId}".
     /// </summary>
     /// <param name="component">Discord message component to parse.</param>
     /// <param name="action">Parsed player action enum value.</param>

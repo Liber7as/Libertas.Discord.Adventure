@@ -6,16 +6,13 @@ using NUnit.Framework;
 namespace Libertas.Discord.Adventure.Core.Tests;
 
 /// <summary>
-/// Tests for individual player actions to ensure each action behaves correctly.
-/// These tests use deterministic seeded randomness for reproducibility.
+///     Tests for individual player actions to ensure each action behaves correctly.
+///     These tests use deterministic seeded randomness for reproducibility.
 /// </summary>
 [TestFixture]
 [Category("Actions")]
 public class PlayerActionTests
 {
-    private IGameEngine _engine = null!;
-    private TestGameRunner _runner = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -25,10 +22,11 @@ public class PlayerActionTests
         _runner = new TestGameRunner(_engine);
     }
 
-    #region Attack Action Tests
+    private IGameEngine _engine = null!;
+    private TestGameRunner _runner = null!;
 
     /// <summary>
-    /// Verifies that the Attack action deals damage to a mob.
+    ///     Verifies that the Attack action deals damage to a mob.
     /// </summary>
     [Test]
     public async Task Attack_DealsDamageToMob()
@@ -40,7 +38,7 @@ public class PlayerActionTests
         var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Attack };
 
         // Act
-        var result = await _runner.ExecuteSingleRoundAsync(1, [player], [mob], actions, verbose: true);
+        var result = await _runner.ExecuteSingleRoundAsync(1, [player], [mob], actions, true);
 
         // Assert
         var damagedMob = result.Mobs.First();
@@ -51,7 +49,7 @@ public class PlayerActionTests
     }
 
     /// <summary>
-    /// Verifies that critical hits deal double damage (15% chance, tested statistically).
+    ///     Verifies that critical hits deal double damage (15% chance, tested statistically).
     /// </summary>
     [Test]
     public async Task Attack_CriticalHits_DealDoubleDamage()
@@ -67,7 +65,7 @@ public class PlayerActionTests
             var player = TestEntityFactory.CreateWarrior($"CritTester{i}");
             player.AttackPower = new PowerLevel(10); // Known damage
 
-            var mob = TestEntityFactory.CreateMob("Target", maxHp: 1000, currentHp: 1000, attackPower: 1);
+            var mob = TestEntityFactory.CreateMob("Target", 1000, 1000, 1);
             var originalHp = mob.CurrentHp; // Save before combat
             var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Attack };
 
@@ -95,12 +93,8 @@ public class PlayerActionTests
             "Critical hit rate should be approximately 15%");
     }
 
-    #endregion
-
-    #region Magic Action Tests
-
     /// <summary>
-    /// Verifies that the Magic action deals damage based on MagicPower.
+    ///     Verifies that the Magic action deals damage based on MagicPower.
     /// </summary>
     [Test]
     public async Task Magic_DealsDamageBasedOnMagicPower()
@@ -112,7 +106,7 @@ public class PlayerActionTests
         var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Magic };
 
         // Act
-        var result = await _runner.ExecuteSingleRoundAsync(1, [player], [mob], actions, verbose: true);
+        var result = await _runner.ExecuteSingleRoundAsync(1, [player], [mob], actions, true);
 
         // Assert
         var damagedMob = result.Mobs.First();
@@ -122,19 +116,15 @@ public class PlayerActionTests
             "Should contain magic message");
     }
 
-    #endregion
-
-    #region Heal Action Tests
-
     /// <summary>
-    /// Verifies that Heal restores HP to an injured ally.
+    ///     Verifies that Heal restores HP to an injured ally.
     /// </summary>
     [Test]
     public async Task Heal_RestoresHpToInjuredAlly()
     {
         // Arrange
         var healer = TestEntityFactory.CreateCleric("Healer");
-        var injured = TestEntityFactory.CreateInjuredPlayer("Wounded", currentHp: 10);
+        var injured = TestEntityFactory.CreateInjuredPlayer("Wounded", 10);
         var mob = TestEntityFactory.CreateWeakMob();
 
         var actions = new Dictionary<PlayerId, PlayerAction>
@@ -144,7 +134,7 @@ public class PlayerActionTests
         };
 
         // Act
-        var result = await _runner.ExecuteSingleRoundAsync(1, [healer, injured], [mob], actions, verbose: true);
+        var result = await _runner.ExecuteSingleRoundAsync(1, [healer, injured], [mob], actions, true);
 
         // Assert
         var healedPlayer = result.Players.First(p => p.Name == "Wounded");
@@ -153,7 +143,7 @@ public class PlayerActionTests
     }
 
     /// <summary>
-    /// Verifies that Heal does nothing when all allies are at full HP.
+    ///     Verifies that Heal does nothing when all allies are at full HP.
     /// </summary>
     [Test]
     public async Task Heal_NoTarget_WhenAllAlliesFullHp()
@@ -170,19 +160,15 @@ public class PlayerActionTests
         };
 
         // Act
-        var result = await _runner.ExecuteSingleRoundAsync(1, [healer, healthy], [mob], actions, verbose: true);
+        var result = await _runner.ExecuteSingleRoundAsync(1, [healer, healthy], [mob], actions, true);
 
         // Assert
         Assert.That(result.Messages.Any(m => m.Contains("no one to heal")),
             "Should report no healing target available");
     }
 
-    #endregion
-
-    #region Talk Action Tests
-
     /// <summary>
-    /// Verifies that Talk can defeat a mob (success depends on SpeechPower vs mob strength).
+    ///     Verifies that Talk can defeat a mob (success depends on SpeechPower vs mob strength).
     /// </summary>
     [Test]
     public async Task Talk_CanDefeatMob_WithHighSpeechPower()
@@ -215,12 +201,8 @@ public class PlayerActionTests
             "Talk should succeed at least once with high speech power");
     }
 
-    #endregion
-
-    #region Pray Action Tests
-
     /// <summary>
-    /// Verifies that Pray has a chance to instant-kill or self-heal.
+    ///     Verifies that Pray has a chance to instant-kill or self-heal.
     /// </summary>
     [Test]
     public async Task Pray_CanSmiteOrHeal()
@@ -260,25 +242,21 @@ public class PlayerActionTests
             "Pray should either smite or heal");
     }
 
-    #endregion
-
-    #region Run Action Tests
-
     /// <summary>
-    /// Verifies that Run can remove a player from combat.
+    ///     Verifies that Run can remove a player from combat.
     /// </summary>
     [Test]
     public async Task Run_CanEscapeCombat()
     {
         // Arrange - use injured player for higher escape chance
-        var runner = TestEntityFactory.CreateInjuredPlayer("Coward", currentHp: 5);
+        var runner = TestEntityFactory.CreateInjuredPlayer("Coward");
         var escapeCount = 0;
         const int iterations = 50;
 
         for (var i = 0; i < iterations; i++)
         {
             var mob = TestEntityFactory.CreateStandardMob();
-            var player = TestEntityFactory.CreateInjuredPlayer($"Coward{i}", currentHp: 5);
+            var player = TestEntityFactory.CreateInjuredPlayer($"Coward{i}");
             var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Run };
 
             var result = await _engine.ExecuteRoundAsync(1, [player], actions, [mob]);
@@ -298,7 +276,7 @@ public class PlayerActionTests
     }
 
     /// <summary>
-    /// Verifies that escape is harder when outnumbered by mobs.
+    ///     Verifies that escape is harder when outnumbered by mobs.
     /// </summary>
     [Test]
     public async Task Run_HarderWhenOutnumbered()
@@ -327,7 +305,7 @@ public class PlayerActionTests
         // Test escape vs 3 mobs (outnumbered)
         for (var i = 0; i < iterations; i++)
         {
-            var mobs = TestEntityFactory.CreateMobSwarm(3);
+            var mobs = TestEntityFactory.CreateMobSwarm();
             var player = TestEntityFactory.CreatePlayer($"RunnerOutnumbered{i}");
             var actions = new Dictionary<PlayerId, PlayerAction> { [player.Id] = PlayerAction.Run };
 
@@ -345,6 +323,4 @@ public class PlayerActionTests
         // Note: Being outnumbered actually gives +15% escape chance in the current implementation
         // This test documents the current behavior
     }
-
-    #endregion
 }

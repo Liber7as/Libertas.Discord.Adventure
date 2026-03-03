@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace Libertas.Discord.Adventure.Core.Services;
 
 /// <summary>
-/// Default implementation of combat calculations using configurable settings.
+///     Default implementation of combat calculations using configurable settings.
 /// </summary>
 public class CombatCalculator(IRandomNumberGenerator rng, IOptions<CombatSettings> options) : ICombatCalculator
 {
@@ -59,7 +59,7 @@ public class CombatCalculator(IRandomNumberGenerator rng, IOptions<CombatSetting
 
         var levelContribution = dungeonLevel / (double)_settings.TalkLevelDivisor;
         var difficulty = mobAttackPower + levelContribution;
-        var successRate = (speechPower * _settings.TalkPowerMultiplier) / difficulty;
+        var successRate = speechPower * _settings.TalkPowerMultiplier / difficulty;
 
         return (int)Math.Clamp(successRate * 100, 0, 100);
     }

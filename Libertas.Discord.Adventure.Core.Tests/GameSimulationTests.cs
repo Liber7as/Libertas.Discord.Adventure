@@ -1,16 +1,14 @@
 using Libertas.Discord.Adventure.Core.GameModels;
-using Libertas.Discord.Adventure.Core.Services;
 using Libertas.Discord.Adventure.Core.Tests.TestUtilities;
 using NUnit.Framework;
 
 namespace Libertas.Discord.Adventure.Core.Tests;
 
 /// <summary>
-/// Visual simulation tests that output detailed game runs for manual verification.
-/// These tests are designed to produce readable output that can be reviewed
-/// to ensure the game "feels right" and behaves as expected.
-/// 
-/// Run these tests with verbose output to see the full game narrative.
+///     Visual simulation tests that output detailed game runs for manual verification.
+///     These tests are designed to produce readable output that can be reviewed
+///     to ensure the game "feels right" and behaves as expected.
+///     Run these tests with verbose output to see the full game narrative.
 /// </summary>
 [TestFixture]
 [Category("Simulation")]
@@ -23,8 +21,8 @@ public class GameSimulationTests
     }
 
     /// <summary>
-    /// Simulates a solo adventure with bot companions.
-    /// Visual output shows how bots assist the player through combat.
+    ///     Simulates a solo adventure with bot companions.
+    ///     Visual output shows how bots assist the player through combat.
     /// </summary>
     [Test]
     public async Task Simulation_SoloAdventure_WithBotCompanions()
@@ -36,7 +34,7 @@ public class GameSimulationTests
 
         var hero = TestEntityFactory.CreatePlayer(
             "Brave Hero",
-            maxHp: 40,
+            40,
             attackPower: 10,
             magicPower: 8,
             speechPower: 6,
@@ -53,20 +51,20 @@ public class GameSimulationTests
 
         // Act
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: [hero],
-            mobs: [TestEntityFactory.CreateWeakMob("Goblin Scout")],
-            actions: actions,
-            maxRounds: 30,
+            1,
+            [hero],
+            [TestEntityFactory.CreateWeakMob("Goblin Scout")],
+            actions,
+            30,
             respawnFunc: (_, level) =>
             {
                 // Progressive difficulty
                 return level switch
                 {
-                    < 5 => [TestEntityFactory.CreateWeakMob($"Goblin Warrior")],
-                    < 10 => [TestEntityFactory.CreateStandardMob($"Orc Grunt")],
-                    < 15 => [TestEntityFactory.CreateToughMob($"Troll Berserker")],
-                    _ => [TestEntityFactory.CreateBossMob($"Dungeon Lord")]
+                    < 5 => [TestEntityFactory.CreateWeakMob("Goblin Warrior")],
+                    < 10 => [TestEntityFactory.CreateStandardMob("Orc Grunt")],
+                    < 15 => [TestEntityFactory.CreateToughMob("Troll Berserker")],
+                    _ => [TestEntityFactory.CreateBossMob("Dungeon Lord")]
                 };
             },
             verbose: true);
@@ -81,8 +79,8 @@ public class GameSimulationTests
     }
 
     /// <summary>
-    /// Simulates a full party adventure with varied actions.
-    /// Each player uses a different strategy.
+    ///     Simulates a full party adventure with varied actions.
+    ///     Each player uses a different strategy.
     /// </summary>
     [Test]
     public async Task Simulation_FullParty_VariedStrategies()
@@ -94,10 +92,10 @@ public class GameSimulationTests
 
         var players = new List<PlayerState>
         {
-            TestEntityFactory.CreateWarrior("Thorin"),    // Attacks
-            TestEntityFactory.CreateMage("Gandalf"),      // Magic
-            TestEntityFactory.CreateCleric("Elrond"),     // Heals
-            TestEntityFactory.CreateRogue("Bilbo")        // Talks (tries diplomacy)
+            TestEntityFactory.CreateWarrior("Thorin"), // Attacks
+            TestEntityFactory.CreateMage("Gandalf"), // Magic
+            TestEntityFactory.CreateCleric("Elrond"), // Heals
+            TestEntityFactory.CreateRogue("Bilbo") // Talks (tries diplomacy)
         };
 
         // Each player has a preferred action
@@ -118,11 +116,11 @@ public class GameSimulationTests
 
         // Act
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: players,
-            mobs: [TestEntityFactory.CreateStandardMob("Cave Troll")],
-            actions: actions,
-            maxRounds: 25,
+            1,
+            players,
+            [TestEntityFactory.CreateStandardMob("Cave Troll")],
+            actions,
+            25,
             respawnFunc: (_, level) =>
             {
                 var names = new[] { "Mountain Orc", "Warg Rider", "Goblin King", "Balrog" };
@@ -141,8 +139,8 @@ public class GameSimulationTests
     }
 
     /// <summary>
-    /// Simulates random actions to show diverse game outcomes.
-    /// Useful for verifying all action types work in combination.
+    ///     Simulates random actions to show diverse game outcomes.
+    ///     Useful for verifying all action types work in combination.
     /// </summary>
     [Test]
     public async Task Simulation_RandomActions_ShowsDiversity()
@@ -167,10 +165,10 @@ public class GameSimulationTests
 
         // Act
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: players,
-            mobs: [TestEntityFactory.CreateStandardMob("Wild Monster")],
-            actions: players.ToDictionary(p => p.Id, _ => PlayerAction.Attack), // Fallback
+            1,
+            players,
+            [TestEntityFactory.CreateStandardMob("Wild Monster")],
+            players.ToDictionary(p => p.Id, _ => PlayerAction.Attack), // Fallback
             actionChooser: (level, ps, _) =>
             {
                 return ps.Where(p => !p.IsBot && p.IsAlive)
@@ -193,8 +191,8 @@ public class GameSimulationTests
     }
 
     /// <summary>
-    /// Simulates an endurance run to see how far a party can progress.
-    /// Tests scaling and survivability over many rounds.
+    ///     Simulates an endurance run to see how far a party can progress.
+    ///     Tests scaling and survivability over many rounds.
     /// </summary>
     [Test]
     public async Task Simulation_EnduranceRun_HowFarCanWeGo()
@@ -223,11 +221,11 @@ public class GameSimulationTests
 
         // Act
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: players,
-            mobs: [TestEntityFactory.CreateWeakMob()],
-            actions: actions,
-            maxRounds: 100,
+            1,
+            players,
+            [TestEntityFactory.CreateWeakMob()],
+            actions,
+            100,
             respawnFunc: (_, level) => [TestEntityFactory.CreateScaledMob(level)],
             verbose: true);
 
@@ -245,8 +243,8 @@ public class GameSimulationTests
     }
 
     /// <summary>
-    /// Simulates a boss fight scenario.
-    /// Tests party coordination against a powerful single enemy.
+    ///     Simulates a boss fight scenario.
+    ///     Tests party coordination against a powerful single enemy.
     /// </summary>
     [Test]
     public async Task Simulation_BossFight_CoordinatedAssault()
@@ -284,11 +282,11 @@ public class GameSimulationTests
         boss.AttackPower = new PowerLevel(15); // Slightly nerfed for fair fight
 
         var result = await runner.ExecuteGameLoopAsync(
-            startLevel: 10,
-            players: players,
-            mobs: [boss],
-            actions: actions,
-            maxRounds: 50,
+            10,
+            players,
+            [boss],
+            actions,
+            50,
             verbose: true);
 
         var victory = result.SurvivingPlayers.Count > 0 && result.Statistics.MobsKilled > 0;

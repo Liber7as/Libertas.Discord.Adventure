@@ -5,11 +5,11 @@ using Microsoft.Extensions.Logging;
 namespace Libertas.Discord.Adventure.Core.Services;
 
 /// <summary>
-/// Core game engine that orchestrates combat rounds.
-/// Coordinates player actions, bot AI, mob attacks, and round summaries.
+///     Core game engine that orchestrates combat rounds.
+///     Coordinates player actions, bot AI, mob attacks, and round summaries.
 /// </summary>
 /// <remarks>
-/// Creates a new GameEngine instance.
+///     Creates a new GameEngine instance.
 /// </remarks>
 /// <param name="playerPhaseProcessor">Processor for handling player actions.</param>
 /// <param name="botPhaseProcessor">Processor for handling bot-related logic.</param>
@@ -23,11 +23,11 @@ public class GameEngine(
     RoundSummaryGenerator roundSummaryGenerator,
     ILogger<GameEngine> logger) : IGameEngine
 {
-    private readonly PlayerPhaseProcessor _playerPhaseProcessor = playerPhaseProcessor;
     private readonly BotPhaseProcessor _botPhaseProcessor = botPhaseProcessor;
-    private readonly MobPhaseProcessor _mobPhaseProcessor = mobPhaseProcessor;
-    private readonly RoundSummaryGenerator _roundSummaryGenerator = roundSummaryGenerator;
     private readonly ILogger<GameEngine> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly MobPhaseProcessor _mobPhaseProcessor = mobPhaseProcessor;
+    private readonly PlayerPhaseProcessor _playerPhaseProcessor = playerPhaseProcessor;
+    private readonly RoundSummaryGenerator _roundSummaryGenerator = roundSummaryGenerator;
 
     /// <inheritdoc />
     public Task<RoundResult> ExecuteRoundAsync(
@@ -90,8 +90,8 @@ public class GameEngine(
     }
 
     /// <summary>
-    /// Captures a snapshot of player earnings before the round for delta calculation.
-    /// Only tracks human players (bots don't earn rewards).
+    ///     Captures a snapshot of player earnings before the round for delta calculation.
+    ///     Only tracks human players (bots don't earn rewards).
     /// </summary>
     private static Dictionary<PlayerId, RoundSummaryGenerator.EarningsSnapshot> CaptureEarningsSnapshot(List<PlayerState> players)
     {
@@ -109,7 +109,7 @@ public class GameEngine(
     }
 
     /// <summary>
-    /// Formats the party status message shown at the start of each round.
+    ///     Formats the party status message shown at the start of each round.
     /// </summary>
     private static string FormatPartyStatusMessage(int humanCount, int botCount, int mobCount)
     {

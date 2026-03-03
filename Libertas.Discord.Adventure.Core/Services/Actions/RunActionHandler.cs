@@ -4,8 +4,8 @@ using Libertas.Discord.Adventure.Core.Services.Combat;
 namespace Libertas.Discord.Adventure.Core.Services.Actions;
 
 /// <summary>
-/// Handles the Run action - attempt to flee from combat.
-/// Success chance is modified by HP status and being outnumbered.
+///     Handles the Run action - attempt to flee from combat.
+///     Success chance is modified by HP status and being outnumbered.
 /// </summary>
 public class RunActionHandler(
     ICombatCalculator calculator,

@@ -3,11 +3,11 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Core.Services.Combat;
 
 /// <summary>
-/// Default implementation of <see cref="IDamageApplier"/>.
-/// Applies damage to players and mobs, and awards defense XP via the progression service.
+///     Default implementation of <see cref="IDamageApplier" />.
+///     Applies damage to players and mobs, and awards defense XP via the progression service.
 /// </summary>
 /// <remarks>
-/// Constructs the damage applier with the required progression service.
+///     Constructs the damage applier with the required progression service.
 /// </remarks>
 /// <param name="progression">Service for calculating defense XP.</param>
 public class DamageApplier(IPlayerProgressionService progression) : IDamageApplier
@@ -15,7 +15,7 @@ public class DamageApplier(IPlayerProgressionService progression) : IDamageAppli
     private readonly IPlayerProgressionService _progression = progression ?? throw new ArgumentNullException(nameof(progression));
 
     /// <summary>
-    /// Applies damage to a player, updates HP, and awards defense XP if applicable.
+    ///     Applies damage to a player, updates HP, and awards defense XP if applicable.
     /// </summary>
     /// <param name="target">Player to apply damage to.</param>
     /// <param name="rawDamage">Raw incoming damage.</param>
@@ -48,7 +48,7 @@ public class DamageApplier(IPlayerProgressionService progression) : IDamageAppli
     }
 
     /// <summary>
-    /// Applies damage to a mob, updating its HP.
+    ///     Applies damage to a mob, updating its HP.
     /// </summary>
     /// <param name="mob">Mob to apply damage to.</param>
     /// <param name="damage">Amount of damage to apply.</param>

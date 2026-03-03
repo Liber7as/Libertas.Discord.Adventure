@@ -5,14 +5,14 @@ using Microsoft.Extensions.Logging;
 namespace Libertas.Discord.Adventure.Discord;
 
 /// <summary>
-/// Background service that processes queued work items from <see cref="IBackgroundWorkQueue"/>.
-/// Ensures CPU/IO-heavy tasks are executed outside Discord event handlers for responsiveness.
+///     Background service that processes queued work items from <see cref="IBackgroundWorkQueue" />.
+///     Ensures CPU/IO-heavy tasks are executed outside Discord event handlers for responsiveness.
 /// </summary>
 /// <remarks>
-/// Uses a single-threaded loop to dequeue and execute work items, logging errors and shutdown events.
+///     Uses a single-threaded loop to dequeue and execute work items, logging errors and shutdown events.
 /// </remarks>
 /// <remarks>
-/// Constructs the background service with the required work queue and logger.
+///     Constructs the background service with the required work queue and logger.
 /// </remarks>
 /// <param name="queue">Work queue to process.</param>
 /// <param name="logger">Logger for structured logging.</param>
@@ -22,7 +22,7 @@ public sealed class QueuedBackgroundService(IBackgroundWorkQueue queue, ILogger<
     private readonly IBackgroundWorkQueue _queue = queue ?? throw new ArgumentNullException(nameof(queue));
 
     /// <summary>
-    /// Main execution loop for the background service. Dequeues and runs work items until shutdown.
+    ///     Main execution loop for the background service. Dequeues and runs work items until shutdown.
     /// </summary>
     /// <param name="stoppingToken">Cancellation token for graceful shutdown.</param>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

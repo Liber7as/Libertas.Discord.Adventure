@@ -3,13 +3,13 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Core.Services.Phases;
 
 /// <summary>
-/// Generates the round summary, including XP and gold earned by players.
+///     Generates the round summary, including XP and gold earned by players.
 /// </summary>
 public class RoundSummaryGenerator
 {
     /// <summary>
-    /// Adds a round summary message showing XP and gold earned this round for each human player.
-    /// Only includes players who earned something during the round.
+    ///     Adds a round summary message showing XP and gold earned this round for each human player.
+    ///     Only includes players who earned something during the round.
     /// </summary>
     public static void AddSummary(
         List<PlayerState> players,
@@ -89,7 +89,7 @@ public class RoundSummaryGenerator
     }
 
     /// <summary>
-    /// Snapshot of a player's earnings at a point in time, used for calculating round deltas.
+    ///     Snapshot of a player's earnings at a point in time, used for calculating round deltas.
     /// </summary>
     public readonly record struct EarningsSnapshot(
         double Gold,

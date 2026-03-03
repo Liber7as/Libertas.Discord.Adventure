@@ -3,8 +3,8 @@ using Libertas.Discord.Adventure.Core.Services;
 namespace Libertas.Discord.Adventure.Core.Settings;
 
 /// <summary>
-/// Settings that contain localized message templates used by <see cref="IActionLocalizationService"/>.
-/// Each list holds possible messages that implementations may choose from at runtime.
+///     Settings that contain localized message templates used by <see cref="IActionLocalizationService" />.
+///     Each list holds possible messages that implementations may choose from at runtime.
 /// </summary>
 public class LocalizationSettings
 {

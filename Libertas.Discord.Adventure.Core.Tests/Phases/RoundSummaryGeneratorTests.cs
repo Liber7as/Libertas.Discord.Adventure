@@ -7,13 +7,13 @@ namespace Libertas.Discord.Adventure.Core.Tests.Phases;
 [TestFixture]
 public class RoundSummaryGeneratorTests
 {
-    private RoundSummaryGenerator _generator = null!;
-
     [SetUp]
     public void SetUp()
     {
         _generator = new RoundSummaryGenerator();
     }
+
+    private RoundSummaryGenerator _generator = null!;
 
     [Test]
     public void AddSummary_ShouldGenerateSummary_ForPlayersWhoEarnedRewards()

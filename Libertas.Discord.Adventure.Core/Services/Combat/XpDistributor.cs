@@ -3,16 +3,16 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Core.Services.Combat;
 
 /// <summary>
-/// Default implementation of <see cref="IXpDistributor"/>.
-/// Delegates XP calculations to <see cref="IPlayerProgressionService"/>.
+///     Default implementation of <see cref="IXpDistributor" />.
+///     Delegates XP calculations to <see cref="IPlayerProgressionService" />.
 /// </summary>
 public class XpDistributor(IPlayerProgressionService progression) : IXpDistributor
 {
     private readonly IPlayerProgressionService _progression = progression ?? throw new ArgumentNullException(nameof(progression));
 
     /// <summary>
-    /// Awards skill XP to a player for using a skill at the given dungeon level.
-    /// Bots do not receive XP.
+    ///     Awards skill XP to a player for using a skill at the given dungeon level.
+    ///     Bots do not receive XP.
     /// </summary>
     /// <param name="player">Target player state.</param>
     /// <param name="skill">Skill type that earned XP.</param>

@@ -5,25 +5,23 @@ using NUnit.Framework;
 namespace Libertas.Discord.Adventure.Core.Tests;
 
 /// <summary>
-/// Tests for the skill-based player progression system.
-/// Validates stat calculations, XP requirements, and skill leveling.
+///     Tests for the skill-based player progression system.
+///     Validates stat calculations, XP requirements, and skill leveling.
 /// </summary>
 [TestFixture]
 [Category("Progression")]
 public class PlayerProgressionTests
 {
-    private IPlayerProgressionService _progressionService = null!;
-
     [SetUp]
     public void SetUp()
     {
         _progressionService = TestServiceFactory.CreateProgressionService();
     }
 
-    #region Stat Calculation Tests
+    private IPlayerProgressionService _progressionService = null!;
 
     /// <summary>
-    /// Verifies base stats are correct for a new player (all skills at level 1).
+    ///     Verifies base stats are correct for a new player (all skills at level 1).
     /// </summary>
     [Test]
     public void CalculateStats_AllSkillsLevel1_ReturnsBaseStats()
@@ -48,17 +46,17 @@ public class PlayerProgressionTests
     }
 
     /// <summary>
-    /// Verifies stats scale correctly with individual skill levels.
+    ///     Verifies stats scale correctly with individual skill levels.
     /// </summary>
     [Test]
     public void CalculateStats_HigherSkillLevels_ScalesCorrectly()
     {
         // Arrange - mixed skill levels
         var skills = new SkillLevels(
-            AttackLevel: 10,  // +18 attack (9 levels * 2)
-            MagicLevel: 5,    // +8 magic (4 levels * 2)
-            SpeechLevel: 15,  // +28 speech (14 levels * 2)
-            DefenseLevel: 20  // +95 HP (19 * 5), +19 defense (19 * 1)
+            10, // +18 attack (9 levels * 2)
+            5, // +8 magic (4 levels * 2)
+            15, // +28 speech (14 levels * 2)
+            20 // +95 HP (19 * 5), +19 defense (19 * 1)
         );
 
         // Act
@@ -67,18 +65,18 @@ public class PlayerProgressionTests
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(stats.MaxHp, Is.EqualTo(20 + (19 * 5)), "HP should scale with Defense level");
-            Assert.That(stats.AttackPower, Is.EqualTo(5 + (9 * 2)), "Attack should scale with Attack level");
-            Assert.That(stats.MagicPower, Is.EqualTo(5 + (4 * 2)), "Magic should scale with Magic level");
-            Assert.That(stats.SpeechPower, Is.EqualTo(5 + (14 * 2)), "Speech should scale with Speech level");
-            Assert.That(stats.DefensePower, Is.EqualTo(2 + (19 * 1)), "Defense should scale with Defense level");
+            Assert.That(stats.MaxHp, Is.EqualTo(20 + 19 * 5), "HP should scale with Defense level");
+            Assert.That(stats.AttackPower, Is.EqualTo(5 + 9 * 2), "Attack should scale with Attack level");
+            Assert.That(stats.MagicPower, Is.EqualTo(5 + 4 * 2), "Magic should scale with Magic level");
+            Assert.That(stats.SpeechPower, Is.EqualTo(5 + 14 * 2), "Speech should scale with Speech level");
+            Assert.That(stats.DefensePower, Is.EqualTo(2 + 19 * 1), "Defense should scale with Defense level");
         });
 
         TestContext.WriteLine($"Mixed level stats: HP={stats.MaxHp}, ATK={stats.AttackPower}, MAG={stats.MagicPower}, SPE={stats.SpeechPower}, DEF={stats.DefensePower}");
     }
 
     /// <summary>
-    /// Verifies high-level characters have significantly better stats.
+    ///     Verifies high-level characters have significantly better stats.
     /// </summary>
     [Test]
     public void CalculateStats_MaxLevel_HasSignificantStats()
@@ -102,12 +100,8 @@ public class PlayerProgressionTests
         });
     }
 
-    #endregion
-
-    #region XP Requirement Tests
-
     /// <summary>
-    /// Verifies XP requirements for early skill levels.
+    ///     Verifies XP requirements for early skill levels.
     /// </summary>
     [Test]
     public void GetXpRequiredForSkillLevel_EarlyLevels_CorrectRequirements()
@@ -130,7 +124,7 @@ public class PlayerProgressionTests
     }
 
     /// <summary>
-    /// Verifies XP to next level calculation.
+    ///     Verifies XP to next level calculation.
     /// </summary>
     [Test]
     public void GetXpToNextSkillLevel_ReturnsCorrectAmount()
@@ -146,7 +140,7 @@ public class PlayerProgressionTests
     }
 
     /// <summary>
-    /// Verifies skill level calculation from total XP.
+    ///     Verifies skill level calculation from total XP.
     /// </summary>
     [Test]
     public void GetSkillLevelForXp_ReturnsCorrectLevel()
@@ -163,12 +157,8 @@ public class PlayerProgressionTests
         });
     }
 
-    #endregion
-
-    #region Skill XP Reward Tests
-
     /// <summary>
-    /// Verifies skill XP rewards scale with dungeon level.
+    ///     Verifies skill XP rewards scale with dungeon level.
     /// </summary>
     [Test]
     public void CalculateSkillXp_ScalesWithDungeonLevel()
@@ -190,7 +180,7 @@ public class PlayerProgressionTests
     }
 
     /// <summary>
-    /// Verifies defense XP from damage taken.
+    ///     Verifies defense XP from damage taken.
     /// </summary>
     [Test]
     public void CalculateDefenseXpFromDamage_ScalesWithDamage()
@@ -211,12 +201,8 @@ public class PlayerProgressionTests
         });
     }
 
-    #endregion
-
-    #region Combat Level Tests
-
     /// <summary>
-    /// Verifies combat level and total level calculations.
+    ///     Verifies combat level and total level calculations.
     /// </summary>
     [Test]
     public void SkillLevels_CombatAndTotalLevel_CalculateCorrectly()
@@ -245,12 +231,8 @@ public class PlayerProgressionTests
         TestContext.WriteLine($"Beginner: Total={beginner.TotalLevel}, Combat={beginner.CombatLevel}");
     }
 
-    #endregion
-
-    #region Progression Fairness Tests
-
     /// <summary>
-    /// Verifies that leveling up provides meaningful but not overpowered stat increases.
+    ///     Verifies that leveling up provides meaningful but not overpowered stat increases.
     /// </summary>
     [Test]
     public void ProgressionCurve_MeaningfulButNotOverpowered()
@@ -274,6 +256,4 @@ public class PlayerProgressionTests
         Assert.That(hpRatio10, Is.InRange(2, 5), "Level 10 should have 2-5x the HP of level 1");
         Assert.That(atkRatio10, Is.InRange(2, 6), "Level 10 should have 2-6x the Attack of level 1");
     }
-
-    #endregion
 }

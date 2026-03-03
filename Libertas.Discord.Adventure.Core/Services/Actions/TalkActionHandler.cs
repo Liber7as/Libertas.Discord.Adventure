@@ -4,8 +4,8 @@ using Libertas.Discord.Adventure.Core.Services.Combat;
 namespace Libertas.Discord.Adventure.Core.Services.Actions;
 
 /// <summary>
-/// Handles the Talk action - attempt to defeat a mob through diplomacy.
-/// Success chance is based on SpeechPower vs mob's AttackPower.
+///     Handles the Talk action - attempt to defeat a mob through diplomacy.
+///     Success chance is based on SpeechPower vs mob's AttackPower.
 /// </summary>
 public class TalkActionHandler(
     ICombatCalculator calculator,
@@ -15,9 +15,9 @@ public class TalkActionHandler(
     ILootDistributor lootDistributor,
     IDamageApplier damageApplier) : PlayerActionHandlerBase(calculator, localization, progression)
 {
-    private readonly IXpDistributor _xpDistributor = xpDistributor ?? throw new ArgumentNullException(nameof(xpDistributor));
-    private readonly ILootDistributor _lootDistributor = lootDistributor ?? throw new ArgumentNullException(nameof(lootDistributor));
     private readonly IDamageApplier _damageApplier = damageApplier ?? throw new ArgumentNullException(nameof(damageApplier));
+    private readonly ILootDistributor _lootDistributor = lootDistributor ?? throw new ArgumentNullException(nameof(lootDistributor));
+    private readonly IXpDistributor _xpDistributor = xpDistributor ?? throw new ArgumentNullException(nameof(xpDistributor));
 
     /// <inheritdoc />
     public override PlayerAction Action => PlayerAction.Talk;

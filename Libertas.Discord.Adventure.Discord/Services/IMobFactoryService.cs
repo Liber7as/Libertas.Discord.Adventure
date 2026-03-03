@@ -3,8 +3,8 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Discord.Services;
 
 /// <summary>
-/// Factory service responsible for creating <see cref="MobState"/> instances from presets
-/// and scaling them for a given dungeon level.
+///     Factory service responsible for creating <see cref="MobState" /> instances from presets
+///     and scaling them for a given dungeon level.
 /// </summary>
 public interface IMobFactoryService
 {

@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using System.Text;
+using Discord.Commands;
 using Libertas.Discord.Adventure.Core.GameModels;
 using Libertas.Discord.Adventure.Core.Services;
 using Libertas.Discord.Adventure.Discord.Data;
@@ -7,8 +8,8 @@ using Libertas.Discord.Adventure.Discord.Services;
 namespace Libertas.Discord.Adventure.Discord.Modules;
 
 /// <summary>
-/// Discord command module for starting adventures, running simulations, and viewing player stats.
-/// Handles the main adventure loop and player interaction commands.
+///     Discord command module for starting adventures, running simulations, and viewing player stats.
+///     Handles the main adventure loop and player interaction commands.
 /// </summary>
 [Group("a")]
 public class AdventureModule(
@@ -21,13 +22,13 @@ public class AdventureModule(
 {
     private readonly MessageService _messageService = messageService;
     private readonly IMobFactoryService _mobFactoryService = mobFactoryService;
-    private readonly IRandomNumberGenerator _randomNumberGenerator = randomNumberGenerator;
-    private readonly AdventureSessionManager _sessionManager = sessionManager;
     private readonly IPlayerService _playerService = playerService;
     private readonly IPlayerProgressionService _progressionService = progressionService;
+    private readonly IRandomNumberGenerator _randomNumberGenerator = randomNumberGenerator;
+    private readonly AdventureSessionManager _sessionManager = sessionManager;
 
     /// <summary>
-    /// Starts a new adventure session in the current channel.
+    ///     Starts a new adventure session in the current channel.
     /// </summary>
     [Command("start")]
     [Summary("Start a button-driven adventure in the channel.")]
@@ -145,7 +146,7 @@ public class AdventureModule(
     }
 
     /// <summary>
-    /// Runs a headless combat simulation of 4 players vs respawning mobs.
+    ///     Runs a headless combat simulation of 4 players vs respawning mobs.
     /// </summary>
     [Command("simulate")]
     [Summary("Run a headless combat simulation of 4 players vs respawning mobs.")]
@@ -253,7 +254,7 @@ public class AdventureModule(
     }
 
     /// <summary>
-    /// Displays the current player's skills, XP, and lifetime statistics.
+    ///     Displays the current player's skills, XP, and lifetime statistics.
     /// </summary>
     [Command("stats")]
     [Summary("View your character's skills, XP, and lifetime statistics.")]
@@ -278,7 +279,7 @@ public class AdventureModule(
         var speechXpCurrent = player.SpeechXpTotal - _progressionService.GetXpRequiredForSkillLevel(player.Skills.SpeechLevel);
         var defenseXpCurrent = player.DefenseXpTotal - _progressionService.GetXpRequiredForSkillLevel(player.Skills.DefenseLevel);
 
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
         sb.AppendLine($"## {player.Name}'s Stats");
         sb.AppendLine("```");
         sb.AppendLine($"  Combat Level: {player.CombatLevel}    Total Level: {player.TotalLevel}");

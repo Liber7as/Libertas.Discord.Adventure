@@ -4,14 +4,17 @@ using Libertas.Discord.Adventure.Core.Services;
 namespace Libertas.Discord.Adventure.Core.Tests.TestUtilities;
 
 /// <summary>
-/// A seeded random number generator for deterministic test results.
-/// Wraps <see cref="Random"/> with a fixed seed.
+///     A seeded random number generator for deterministic test results.
+///     Wraps <see cref="Random" /> with a fixed seed.
 /// </summary>
 public class SeededRandomNumberGenerator(int seed) : IRandomNumberGenerator
 {
     private readonly Random _random = new(seed);
 
-    public int Next(int minValue, int maxValue) => _random.Next(minValue, maxValue);
+    public int Next(int minValue, int maxValue)
+    {
+        return _random.Next(minValue, maxValue);
+    }
 
     public T? GetRandom<T>(List<T> items) where T : class
     {

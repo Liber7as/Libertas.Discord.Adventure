@@ -6,17 +6,21 @@ using Microsoft.Extensions.Options;
 namespace Libertas.Discord.Adventure.Core.Services;
 
 /// <summary>
-/// Default implementation of <see cref="IBotService"/>.
-/// Creates AI companions with level-scaled stats and simple combat AI.
+///     Default implementation of <see cref="IBotService" />.
+///     Creates AI companions with level-scaled stats and simple combat AI.
 /// </summary>
 /// <remarks>
-/// <para><b>Bot ID Strategy:</b> Bot IDs count down from <c>ulong.MaxValue</c> to avoid 
-/// collision with Discord user IDs (which are smaller snowflake values).</para>
-/// <para><b>AI Decision Tree:</b> Bots prioritize healing injured allies, then self-preservation,
-/// then offensive actions weighted toward physical attacks.</para>
+///     <para>
+///         <b>Bot ID Strategy:</b> Bot IDs count down from <c>ulong.MaxValue</c> to avoid
+///         collision with Discord user IDs (which are smaller snowflake values).
+///     </para>
+///     <para>
+///         <b>AI Decision Tree:</b> Bots prioritize healing injured allies, then self-preservation,
+///         then offensive actions weighted toward physical attacks.
+///     </para>
 /// </remarks>
 /// <remarks>
-/// Creates a new BotService instance.
+///     Creates a new BotService instance.
 /// </remarks>
 /// <param name="rng">Random number generator for stat variance and AI decisions.</param>
 /// <param name="options">Bot configuration settings.</param>
@@ -26,12 +30,12 @@ public class BotService(
     IOptions<BotSettings> options,
     ILogger<BotService> logger) : IBotService
 {
+    private readonly ILogger<BotService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IRandomNumberGenerator _rng = rng ?? throw new ArgumentNullException(nameof(rng));
     private readonly BotSettings _settings = options?.Value ?? throw new ArgumentNullException(nameof(options));
-    private readonly ILogger<BotService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>
-    /// Next bot ID to assign. Counts down from ulong.MaxValue to avoid Discord ID collisions.
+    ///     Next bot ID to assign. Counts down from ulong.MaxValue to avoid Discord ID collisions.
     /// </summary>
     private ulong _nextBotId = ulong.MaxValue;
 
@@ -41,7 +45,7 @@ public class BotService(
         var bots = new List<PlayerState>();
 
         // Count alive humans and total bots (alive + dead) to determine if more bots are needed.
-        // Dead bots should NOT be replaced — the party started with enough help.
+        // Dead bots should NOT be replaced ï¿½ the party started with enough help.
         var aliveHumans = allPlayers.Count(p => !p.IsBot && p.IsAlive);
         var totalBots = allPlayers.Count(p => p.IsBot);
         var currentSize = aliveHumans + totalBots;
@@ -115,9 +119,9 @@ public class BotService(
         var roll = _rng.Next(0, 100);
         var action = roll switch
         {
-            < 70 => PlayerAction.Attack,  // 70% chance
-            < 90 => PlayerAction.Magic,   // 20% chance
-            _ => PlayerAction.Talk        // 10% chance
+            < 70 => PlayerAction.Attack, // 70% chance
+            < 90 => PlayerAction.Magic, // 20% chance
+            _ => PlayerAction.Talk // 10% chance
         };
 
         _logger.LogTrace("Bot {BotName} choosing {Action} (roll: {Roll})", bot.Name, action, roll);
@@ -125,22 +129,22 @@ public class BotService(
     }
 
     /// <summary>
-    /// Creates a single bot with stats scaled to the dungeon level.
-    /// Applies random variance to make bots feel more unique.
+    ///     Creates a single bot with stats scaled to the dungeon level.
+    ///     Applies random variance to make bots feel more unique.
     /// </summary>
     /// <param name="dungeonLevel">Base level for stat scaling.</param>
     /// <param name="availableNames">Pool of unused bot names. Modified to remove selected name.</param>
     /// <returns>A new bot PlayerState ready for combat.</returns>
     private PlayerState CreateBot(int dungeonLevel, List<string> availableNames)
     {
-        // Apply variance to the level: ±StatLevelVariance
+        // Apply variance to the level: ï¿½StatLevelVariance
         var minLevel = Math.Max(_settings.MinimumBotLevel, dungeonLevel - _settings.StatLevelVariance);
         var maxLevel = dungeonLevel + _settings.StatLevelVariance;
         var effectiveLevel = _rng.Next(minLevel, maxLevel + 1);
 
-        // Calculate stats: base + (level × per-level bonus)
-        var hp = _settings.BaseHp + (effectiveLevel * _settings.HpPerLevel);
-        var power = _settings.BasePower + (effectiveLevel * _settings.PowerPerLevel);
+        // Calculate stats: base + (level ï¿½ per-level bonus)
+        var hp = _settings.BaseHp + effectiveLevel * _settings.HpPerLevel;
+        var power = _settings.BasePower + effectiveLevel * _settings.PowerPerLevel;
 
         var name = SelectBotName(availableNames);
 
@@ -162,9 +166,9 @@ public class BotService(
     }
 
     /// <summary>
-    /// Selects a name for a new bot from the available pool.
-    /// Removes the selected name from the pool to prevent duplicates.
-    /// Falls back to a generic numbered name if all names are exhausted.
+    ///     Selects a name for a new bot from the available pool.
+    ///     Removes the selected name from the pool to prevent duplicates.
+    ///     Falls back to a generic numbered name if all names are exhausted.
     /// </summary>
     /// <param name="availableNames">Pool of unused names. Modified to remove selected name.</param>
     /// <returns>The selected bot name.</returns>

@@ -1,31 +1,31 @@
 using Discord.WebSocket;
+using Libertas.Discord.Adventure.Core.Data;
 using Libertas.Discord.Adventure.Core.GameModels;
 using Libertas.Discord.Adventure.Core.Services;
-using Libertas.Discord.Adventure.Core.Data;
+using Microsoft.Extensions.Logging;
 // using Libertas.Discord.Adventure.Data.Entities; // no longer needed
 // using Libertas.Discord.Adventure.Discord.Data; // no longer needed
-using Microsoft.Extensions.Logging;
 
 namespace Libertas.Discord.Adventure.Discord.Data;
 
 /// <summary>
-/// Implementation of <see cref="IPlayerService"/> integrating database persistence with combat state.
-/// Handles player creation, stat calculation, and progress saving.
+///     Implementation of <see cref="IPlayerService" /> integrating database persistence with combat state.
+///     Handles player creation, stat calculation, and progress saving.
 /// </summary>
 /// <remarks>
-/// Constructs the player service with required dependencies.
+///     Constructs the player service with required dependencies.
 /// </remarks>
 /// <param name="playerRepository">Repository for player persistence.</param>
 /// <param name="progressionService">Service for skill/stat calculations.</param>
 /// <param name="logger">Logger for structured logging.</param>
 public class PlayerService(
-    Libertas.Discord.Adventure.Core.Data.IPlayerRepository playerRepository,
+    IPlayerRepository playerRepository,
     IPlayerProgressionService progressionService,
     ILogger<PlayerService> logger) : IPlayerService
 {
-    private readonly Libertas.Discord.Adventure.Core.Data.IPlayerRepository _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
-    private readonly IPlayerProgressionService _progressionService = progressionService ?? throw new ArgumentNullException(nameof(progressionService));
     private readonly ILogger<PlayerService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IPlayerRepository _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
+    private readonly IPlayerProgressionService _progressionService = progressionService ?? throw new ArgumentNullException(nameof(progressionService));
 
     /// <inheritdoc />
     public Task<PlayerState> GetOrCreateAsync(SocketUser user, CancellationToken cancellationToken = default)
@@ -35,7 +35,7 @@ public class PlayerService(
 
     /// <inheritdoc />
     /// <summary>
-    /// Gets or creates a player by Discord user ID and username, then calculates combat stats.
+    ///     Gets or creates a player by Discord user ID and username, then calculates combat stats.
     /// </summary>
     /// <param name="userId">Discord user ID.</param>
     /// <param name="username">Discord username.</param>
@@ -68,7 +68,7 @@ public class PlayerService(
 
     /// <inheritdoc />
     /// <summary>
-    /// Saves player progress after a session, updating XP, gold, kills, deaths, and detecting level-ups.
+    ///     Saves player progress after a session, updating XP, gold, kills, deaths, and detecting level-ups.
     /// </summary>
     /// <param name="playerState">Player combat state.</param>
     /// <param name="dungeonLevel">Dungeon level reached.</param>
@@ -163,7 +163,7 @@ public class PlayerService(
 
     /// <inheritdoc />
     /// <summary>
-    /// Gets the persisted player state by ID.
+    ///     Gets the persisted player state by ID.
     /// </summary>
     /// <param name="playerId">Player ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

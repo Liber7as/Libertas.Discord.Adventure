@@ -4,8 +4,8 @@ using Libertas.Discord.Adventure.Core.Services.Combat;
 namespace Libertas.Discord.Adventure.Core.Services.Actions;
 
 /// <summary>
-/// Handles the Heal action - restore HP to an injured ally.
-/// Cannot heal self; targets a random injured ally.
+///     Handles the Heal action - restore HP to an injured ally.
+///     Cannot heal self; targets a random injured ally.
 /// </summary>
 public class HealActionHandler(
     ICombatCalculator calculator,

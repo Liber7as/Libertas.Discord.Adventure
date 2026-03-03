@@ -1,22 +1,18 @@
 using Libertas.Discord.Adventure.Core.GameModels;
-using Libertas.Discord.Adventure.Core.Services;
-using NUnit.Framework;
 
 namespace Libertas.Discord.Adventure.Data.Tests;
 
 /// <summary>
-/// Integration tests for player persistence and progression.
-/// Uses in-memory database for isolation and speed.
+///     Integration tests for player persistence and progression.
+///     Uses in-memory database for isolation and speed.
 /// </summary>
 [TestFixture]
 [Category("Database")]
 [Category("Integration")]
 public class PlayerPersistenceTests
 {
-    #region Player Creation Tests
-
     /// <summary>
-    /// Verifies that a new player is created with correct default values.
+    ///     Verifies that a new player is created with correct default values.
     /// </summary>
     [Test]
     public async Task NewPlayer_HasCorrectDefaults()
@@ -52,7 +48,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that getting the same player twice returns consistent data.
+    ///     Verifies that getting the same player twice returns consistent data.
     /// </summary>
     [Test]
     public async Task GetPlayer_ReturnsSameData()
@@ -72,7 +68,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that username updates are persisted.
+    ///     Verifies that username updates are persisted.
     /// </summary>
     [Test]
     public async Task UsernameChange_IsPersisted()
@@ -95,12 +91,8 @@ public class PlayerPersistenceTests
         Assert.That(dbPlayer!.Name, Is.EqualTo("NewName"));
     }
 
-    #endregion
-
-    #region XP and Level-Up Tests
-
     /// <summary>
-    /// Verifies that XP is correctly accumulated across sessions.
+    ///     Verifies that XP is correctly accumulated across sessions.
     /// </summary>
     [Test]
     public async Task XpAccumulation_PersistsCorrectly()
@@ -119,7 +111,7 @@ public class PlayerPersistenceTests
         playerState.DefenseXpEarned = 5;
 
         // Act - save progress
-        await playerService.SaveProgressAsync(playerState, dungeonLevel: 1, died: false);
+        await playerService.SaveProgressAsync(playerState, 1, false);
 
         // Assert - check database
         var dbPlayer = await playerService.GetPlayerDataAsync(22222UL);
@@ -132,7 +124,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that XP from multiple sessions accumulates correctly.
+    ///     Verifies that XP from multiple sessions accumulates correctly.
     /// </summary>
     [Test]
     public async Task MultipleSessionXp_AccumulatesCorrectly()
@@ -144,17 +136,17 @@ public class PlayerPersistenceTests
         // Session 1
         var session1 = await playerService.GetOrCreateAsync(33333UL, "MultiSession");
         session1.AttackXpEarned = 30;
-        await playerService.SaveProgressAsync(session1, dungeonLevel: 1, died: false);
+        await playerService.SaveProgressAsync(session1, 1, false);
 
         // Session 2 - get fresh state
         var session2 = await playerService.GetOrCreateAsync(33333UL, "MultiSession");
         session2.AttackXpEarned = 20; // New XP this session
-        await playerService.SaveProgressAsync(session2, dungeonLevel: 2, died: false);
+        await playerService.SaveProgressAsync(session2, 2, false);
 
         // Session 3
         var session3 = await playerService.GetOrCreateAsync(33333UL, "MultiSession");
         session3.AttackXpEarned = 50;
-        await playerService.SaveProgressAsync(session3, dungeonLevel: 3, died: false);
+        await playerService.SaveProgressAsync(session3, 3, false);
 
         // Assert
         var dbPlayer = await playerService.GetPlayerDataAsync(33333UL);
@@ -165,7 +157,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that level-ups are correctly detected when XP threshold is crossed.
+    ///     Verifies that level-ups are correctly detected when XP threshold is crossed.
     /// </summary>
     [Test]
     public async Task LevelUp_DetectedCorrectly()
@@ -182,7 +174,7 @@ public class PlayerPersistenceTests
         playerState.AttackXpEarned = xpForLevel2; // Exactly enough for level 2
 
         // Act
-        var result = await playerService.SaveProgressAsync(playerState, dungeonLevel: 1, died: false);
+        var result = await playerService.SaveProgressAsync(playerState, 1, false);
 
         // Assert
         Assert.That(result.LevelUps, Has.Count.EqualTo(1), "Should have exactly one level-up");
@@ -198,7 +190,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that multiple level-ups in one session are all detected.
+    ///     Verifies that multiple level-ups in one session are all detected.
     /// </summary>
     [Test]
     public async Task MultipleLevelUps_AllDetected()
@@ -219,7 +211,7 @@ public class PlayerPersistenceTests
         playerState.DefenseXpEarned = xpForLevel5;
 
         // Act
-        var result = await playerService.SaveProgressAsync(playerState, dungeonLevel: 1, died: false);
+        var result = await playerService.SaveProgressAsync(playerState, 1, false);
 
         // Assert
         Assert.That(result.LevelUps, Has.Count.EqualTo(4), "Should have 4 level-ups (one per skill)");
@@ -233,7 +225,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that stats are recalculated correctly after level-ups.
+    ///     Verifies that stats are recalculated correctly after level-ups.
     /// </summary>
     [Test]
     public async Task StatsRecalculation_AfterLevelUp()
@@ -249,7 +241,7 @@ public class PlayerPersistenceTests
         var playerState = await playerService.GetOrCreateAsync(66666UL, "StatsTest");
         playerState.AttackXpEarned = xpForLevel10;
         playerState.DefenseXpEarned = xpForLevel10;
-        await playerService.SaveProgressAsync(playerState, dungeonLevel: 1, died: false);
+        await playerService.SaveProgressAsync(playerState, 1, false);
 
         // Act - reload player to get recalculated stats
         var reloadedPlayer = await playerService.GetOrCreateAsync(66666UL, "StatsTest");
@@ -265,12 +257,8 @@ public class PlayerPersistenceTests
         TestContext.Out.WriteLine($"After level-up: HP={reloadedPlayer.MaxHp}, ATK={reloadedPlayer.AttackPower.Value}, DEF={reloadedPlayer.DefensePower.Value}");
     }
 
-    #endregion
-
-    #region Gold and Statistics Tests
-
     /// <summary>
-    /// Verifies that gold is correctly accumulated.
+    ///     Verifies that gold is correctly accumulated.
     /// </summary>
     [Test]
     public async Task GoldAccumulation_PersistsCorrectly()
@@ -283,7 +271,7 @@ public class PlayerPersistenceTests
         playerState.GoldEarned = 150.5;
 
         // Act
-        await playerService.SaveProgressAsync(playerState, dungeonLevel: 5, died: false);
+        await playerService.SaveProgressAsync(playerState, 5, false);
 
         // Assert
         var dbPlayer = await playerService.GetPlayerDataAsync(77777UL);
@@ -291,7 +279,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that kills are correctly tracked.
+    ///     Verifies that kills are correctly tracked.
     /// </summary>
     [Test]
     public async Task KillTracking_PersistsCorrectly()
@@ -304,7 +292,7 @@ public class PlayerPersistenceTests
         playerState.MobsKilled = 7;
 
         // Act
-        await playerService.SaveProgressAsync(playerState, dungeonLevel: 3, died: false);
+        await playerService.SaveProgressAsync(playerState, 3, false);
 
         // Assert
         var dbPlayer = await playerService.GetPlayerDataAsync(88888UL);
@@ -312,7 +300,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that deaths are correctly tracked.
+    ///     Verifies that deaths are correctly tracked.
     /// </summary>
     [Test]
     public async Task DeathTracking_PersistsCorrectly()
@@ -324,11 +312,11 @@ public class PlayerPersistenceTests
         var playerState = await playerService.GetOrCreateAsync(99991UL, "DeathTest");
 
         // Act - die in first session
-        await playerService.SaveProgressAsync(playerState, dungeonLevel: 5, died: true);
+        await playerService.SaveProgressAsync(playerState, 5, true);
 
         // Die again in second session
         var session2 = await playerService.GetOrCreateAsync(99991UL, "DeathTest");
-        await playerService.SaveProgressAsync(session2, dungeonLevel: 3, died: true);
+        await playerService.SaveProgressAsync(session2, 3, true);
 
         // Assert
         var dbPlayer = await playerService.GetPlayerDataAsync(99991UL);
@@ -336,7 +324,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that highest dungeon level only increases, never decreases.
+    ///     Verifies that highest dungeon level only increases, never decreases.
     /// </summary>
     [Test]
     public async Task HighestDungeonLevel_OnlyIncreases()
@@ -347,27 +335,23 @@ public class PlayerPersistenceTests
 
         // Session 1 - reach level 10
         var session1 = await playerService.GetOrCreateAsync(99992UL, "DungeonTest");
-        await playerService.SaveProgressAsync(session1, dungeonLevel: 10, died: true);
+        await playerService.SaveProgressAsync(session1, 10, true);
 
         // Session 2 - only reach level 5
         var session2 = await playerService.GetOrCreateAsync(99992UL, "DungeonTest");
-        await playerService.SaveProgressAsync(session2, dungeonLevel: 5, died: false);
+        await playerService.SaveProgressAsync(session2, 5, false);
 
         // Session 3 - reach level 15
         var session3 = await playerService.GetOrCreateAsync(99992UL, "DungeonTest");
-        await playerService.SaveProgressAsync(session3, dungeonLevel: 15, died: false);
+        await playerService.SaveProgressAsync(session3, 15, false);
 
         // Assert
         var dbPlayer = await playerService.GetPlayerDataAsync(99992UL);
         Assert.That(dbPlayer!.HighestDungeonLevel, Is.EqualTo(15), "Highest should be 15, not 5");
     }
 
-    #endregion
-
-    #region Bot Handling Tests
-
     /// <summary>
-    /// Verifies that bot players don't have progress saved.
+    ///     Verifies that bot players don't have progress saved.
     /// </summary>
     [Test]
     public async Task BotProgress_NotSaved()
@@ -386,7 +370,7 @@ public class PlayerPersistenceTests
         };
 
         // Act
-        var result = await playerService.SaveProgressAsync(botState, dungeonLevel: 10, died: false);
+        var result = await playerService.SaveProgressAsync(botState, 10, false);
 
         // Assert - no level-ups returned for bots
         Assert.That(result.LevelUps, Is.Empty);
@@ -396,12 +380,8 @@ public class PlayerPersistenceTests
         Assert.That(dbPlayer, Is.Null, "Bot should not be saved to database");
     }
 
-    #endregion
-
-    #region Edge Cases
-
     /// <summary>
-    /// Verifies that saving progress for non-existent player is handled gracefully.
+    ///     Verifies that saving progress for non-existent player is handled gracefully.
     /// </summary>
     [Test]
     public async Task SaveProgress_NonExistentPlayer_HandledGracefully()
@@ -418,14 +398,14 @@ public class PlayerPersistenceTests
         };
 
         // Act - should not throw
-        var result = await playerService.SaveProgressAsync(fakePlayerState, dungeonLevel: 1, died: false);
+        var result = await playerService.SaveProgressAsync(fakePlayerState, 1, false);
 
         // Assert
         Assert.That(result.LevelUps, Is.Empty, "Should return empty level-ups for non-existent player");
     }
 
     /// <summary>
-    /// Verifies XP does not overflow with very large values.
+    ///     Verifies XP does not overflow with very large values.
     /// </summary>
     [Test]
     public async Task LargeXpValues_NoOverflow()
@@ -438,7 +418,7 @@ public class PlayerPersistenceTests
         playerState.AttackXpEarned = 1_000_000_000L;
 
         // Act
-        await playerService.SaveProgressAsync(playerState, dungeonLevel: 1, died: false);
+        await playerService.SaveProgressAsync(playerState, 1, false);
 
         // Assert
         var dbPlayer = await playerService.GetPlayerDataAsync(99993UL);
@@ -449,7 +429,7 @@ public class PlayerPersistenceTests
     }
 
     /// <summary>
-    /// Verifies that multiple players are isolated correctly.
+    ///     Verifies that multiple players are isolated correctly.
     /// </summary>
     [Test]
     public async Task MultiplePlayersIsolated()
@@ -466,8 +446,8 @@ public class PlayerPersistenceTests
         player1.AttackXpEarned = 100;
         player2.MagicXpEarned = 200;
 
-        await playerService.SaveProgressAsync(player1, dungeonLevel: 1, died: false);
-        await playerService.SaveProgressAsync(player2, dungeonLevel: 1, died: false);
+        await playerService.SaveProgressAsync(player1, 1, false);
+        await playerService.SaveProgressAsync(player2, 1, false);
 
         // Assert - verify isolation
         var db1 = await playerService.GetPlayerDataAsync(11111UL);
@@ -479,6 +459,4 @@ public class PlayerPersistenceTests
         Assert.That(db2!.AttackXpTotal, Is.EqualTo(0));
         Assert.That(db2.MagicXpTotal, Is.EqualTo(200));
     }
-
-    #endregion
 }

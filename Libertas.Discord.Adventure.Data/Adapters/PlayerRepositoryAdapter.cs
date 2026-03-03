@@ -1,28 +1,27 @@
 using Libertas.Discord.Adventure.Core.Data;
 using Libertas.Discord.Adventure.Core.GameModels;
-using Libertas.Discord.Adventure.Data;
+using Libertas.Discord.Adventure.Core.Services;
 using Libertas.Discord.Adventure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Libertas.Discord.Adventure.Core.Services;
 
 namespace Libertas.Discord.Adventure.Data.Adapters;
 
 /// <summary>
-/// Adapter that implements core-facing IPlayerRepository using the EF Player entity.
-/// Maps between persistent Player entity and core PlayerState.
+///     Adapter that implements core-facing IPlayerRepository using the EF Player entity.
+///     Maps between persistent Player entity and core PlayerState.
 /// </summary>
 /// <summary>
-/// Repository adapter that maps EF <see cref="Player"/> entities to core <see cref="PlayerState"/> objects
-/// and persists changes from core back into the database.
+///     Repository adapter that maps EF <see cref="Player" /> entities to core <see cref="PlayerState" /> objects
+///     and persists changes from core back into the database.
 /// </summary>
-public class PlayerRepositoryAdapter(IDbContextFactory<AdventureContext> dbContextFactory, ILogger<PlayerRepositoryAdapter> logger) : Libertas.Discord.Adventure.Core.Data.IPlayerRepository
+public class PlayerRepositoryAdapter(IDbContextFactory<AdventureContext> dbContextFactory, ILogger<PlayerRepositoryAdapter> logger) : IPlayerRepository
 {
     private readonly IDbContextFactory<AdventureContext> _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
     private readonly ILogger<PlayerRepositoryAdapter> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>
-    /// Loads a player by id and maps it to a <see cref="PlayerState"/>. Returns <c>null</c> if not found.
+    ///     Loads a player by id and maps it to a <see cref="PlayerState" />. Returns <c>null</c> if not found.
     /// </summary>
     public async Task<PlayerState?> GetByIdAsync(PlayerId id, CancellationToken cancellationToken = default)
     {
@@ -43,7 +42,7 @@ public class PlayerRepositoryAdapter(IDbContextFactory<AdventureContext> dbConte
     // Legacy entity-returning APIs removed; core code should use PlayerState via IPlayerRepository
 
     /// <summary>
-    /// Retrieves an existing player state or creates a new persistent player record when none exists.
+    ///     Retrieves an existing player state or creates a new persistent player record when none exists.
     /// </summary>
     public async Task<PlayerState> GetOrCreateAsync(PlayerId id, string username, CancellationToken cancellationToken = default)
     {
@@ -96,7 +95,7 @@ public class PlayerRepositoryAdapter(IDbContextFactory<AdventureContext> dbConte
     // Legacy entity-returning APIs removed; core code should use PlayerState via IPlayerRepository
 
     /// <summary>
-    /// Persists changes from a <see cref="PlayerState"/> back to the underlying <see cref="Player"/> entity.
+    ///     Persists changes from a <see cref="PlayerState" /> back to the underlying <see cref="Player" /> entity.
     /// </summary>
     public async Task UpdateAsync(PlayerState playerState, CancellationToken cancellationToken = default)
     {
@@ -197,7 +196,7 @@ public class PlayerRepositoryAdapter(IDbContextFactory<AdventureContext> dbConte
     // Legacy entity-returning APIs removed; core code should use PlayerState via IPlayerRepository
 
     /// <summary>
-    /// Returns the top players ordered by the sum of their skill levels.
+    ///     Returns the top players ordered by the sum of their skill levels.
     /// </summary>
     public async Task<List<PlayerState>> GetTopPlayersByTotalLevelAsync(int count = 10, CancellationToken cancellationToken = default)
     {
@@ -213,7 +212,7 @@ public class PlayerRepositoryAdapter(IDbContextFactory<AdventureContext> dbConte
     }
 
     /// <summary>
-    /// Returns the top players ordered by highest dungeon reached.
+    ///     Returns the top players ordered by highest dungeon reached.
     /// </summary>
     public async Task<List<PlayerState>> GetTopPlayersByHighestDungeonAsync(int count = 10, CancellationToken cancellationToken = default)
     {
@@ -229,7 +228,7 @@ public class PlayerRepositoryAdapter(IDbContextFactory<AdventureContext> dbConte
     }
 
     /// <summary>
-    /// Returns the top players ordered by total gold.
+    ///     Returns the top players ordered by total gold.
     /// </summary>
     public async Task<List<PlayerState>> GetTopPlayersByGoldAsync(int count = 10, CancellationToken cancellationToken = default)
     {

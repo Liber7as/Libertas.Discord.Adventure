@@ -6,24 +6,20 @@ using NUnit.Framework;
 namespace Libertas.Discord.Adventure.Core.Tests;
 
 /// <summary>
-/// Core game engine integration tests.
-/// These tests verify that the game engine correctly orchestrates combat rounds.
-/// 
-/// For more specific tests, see:
-/// - <see cref="PlayerActionTests"/> - Individual action mechanics
-/// - <see cref="BotSystemTests"/> - AI companion behavior
-/// - <see cref="LootDistributionTests"/> - Gold distribution fairness
-/// - <see cref="GameBalanceTests"/> - Statistical balance validation
-/// - <see cref="EdgeCaseTests"/> - Boundary conditions
-/// - <see cref="GameSimulationTests"/> - Visual game simulations
+///     Core game engine integration tests.
+///     These tests verify that the game engine correctly orchestrates combat rounds.
+///     For more specific tests, see:
+///     - <see cref="PlayerActionTests" /> - Individual action mechanics
+///     - <see cref="BotSystemTests" /> - AI companion behavior
+///     - <see cref="LootDistributionTests" /> - Gold distribution fairness
+///     - <see cref="GameBalanceTests" /> - Statistical balance validation
+///     - <see cref="EdgeCaseTests" /> - Boundary conditions
+///     - <see cref="GameSimulationTests" /> - Visual game simulations
 /// </summary>
 [TestFixture]
 [Category("Integration")]
 public class GameEngineTests
 {
-    private IGameEngine _engine = null!;
-    private TestGameRunner _runner = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -32,8 +28,11 @@ public class GameEngineTests
         _runner = new TestGameRunner(_engine);
     }
 
+    private IGameEngine _engine = null!;
+    private TestGameRunner _runner = null!;
+
     /// <summary>
-    /// Verifies that a basic combat round executes successfully with all action types.
+    ///     Verifies that a basic combat round executes successfully with all action types.
     /// </summary>
     [Test]
     public async Task BasicCombat_AllActionTypes_ExecutesSuccessfully()
@@ -45,7 +44,7 @@ public class GameEngineTests
             TestEntityFactory.CreateMage("Caster"),
             TestEntityFactory.CreateCleric("Healer"),
             TestEntityFactory.CreateRogue("Talker"),
-            TestEntityFactory.CreateInjuredPlayer("Runner", currentHp: 5)
+            TestEntityFactory.CreateInjuredPlayer("Runner", 5)
         };
 
         var mob = TestEntityFactory.CreateStandardMob("Goblin");
@@ -60,7 +59,7 @@ public class GameEngineTests
         };
 
         // Act
-        var result = await _runner.ExecuteSingleRoundAsync(1, party, [mob], actions, verbose: true);
+        var result = await _runner.ExecuteSingleRoundAsync(1, party, [mob], actions, true);
 
         // Assert
         Assert.That(result.Messages.Count, Is.GreaterThan(1),
@@ -70,7 +69,7 @@ public class GameEngineTests
     }
 
     /// <summary>
-    /// Verifies that a full game loop can execute until completion.
+    ///     Verifies that a full game loop can execute until completion.
     /// </summary>
     [Test]
     public async Task FullGameLoop_ExecutesUntilPartyWipe()
@@ -83,11 +82,11 @@ public class GameEngineTests
 
         // Act
         var result = await _runner.ExecuteGameLoopAsync(
-            startLevel: 1,
-            players: party,
-            mobs: [mob],
-            actions: actions,
-            maxRounds: 50,
+            1,
+            party,
+            [mob],
+            actions,
+            50,
             respawnFunc: (_, level) => [TestEntityFactory.CreateScaledMob(level)],
             verbose: true);
 
@@ -102,7 +101,7 @@ public class GameEngineTests
     }
 
     /// <summary>
-    /// Verifies that round results contain expected state.
+    ///     Verifies that round results contain expected state.
     /// </summary>
     [Test]
     public async Task RoundResult_ContainsExpectedState()
@@ -123,7 +122,7 @@ public class GameEngineTests
     }
 
     /// <summary>
-    /// Verifies that mobs act after all players in a round.
+    ///     Verifies that mobs act after all players in a round.
     /// </summary>
     [Test]
     public async Task TurnOrder_PlayersActBeforeMobs()
@@ -154,7 +153,7 @@ public class GameEngineTests
     }
 
     /// <summary>
-    /// Verifies that the game progresses through multiple levels correctly.
+    ///     Verifies that the game progresses through multiple levels correctly.
     /// </summary>
     [Test]
     public async Task LevelProgression_LevelsIncreaseCorrectly()
@@ -184,7 +183,7 @@ public class GameEngineTests
     }
 
     /// <summary>
-    /// Verifies that player state persists correctly between rounds.
+    ///     Verifies that player state persists correctly between rounds.
     /// </summary>
     [Test]
     public async Task StatePersistence_PlayerHpPersistsBetweenRounds()

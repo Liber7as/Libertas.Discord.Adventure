@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 namespace Libertas.Discord.Adventure.Core.Services;
 
 /// <summary>
-/// Default implementation of <see cref="IPlayerProgressionService"/>.
+///     Default implementation of <see cref="IPlayerProgressionService" />.
 /// </summary>
 public class PlayerProgressionService(IOptions<ProgressionSettings> options) : IPlayerProgressionService
 {
@@ -14,19 +14,19 @@ public class PlayerProgressionService(IOptions<ProgressionSettings> options) : I
     public PlayerStats CalculateStats(SkillLevels skillLevels)
     {
         // Calculate each stat based on its skill level
-        var hp = _settings.BaseHp + ((skillLevels.DefenseLevel - 1) * _settings.HpPerDefenseLevel);
-        var attack = _settings.BaseAttackPower + ((skillLevels.AttackLevel - 1) * _settings.AttackPerLevel);
-        var magic = _settings.BaseMagicPower + ((skillLevels.MagicLevel - 1) * _settings.MagicPerLevel);
-        var speech = _settings.BaseSpeechPower + ((skillLevels.SpeechLevel - 1) * _settings.SpeechPerLevel);
-        var defense = _settings.BaseDefensePower + ((skillLevels.DefenseLevel - 1) * _settings.DefensePerLevel);
+        var hp = _settings.BaseHp + (skillLevels.DefenseLevel - 1) * _settings.HpPerDefenseLevel;
+        var attack = _settings.BaseAttackPower + (skillLevels.AttackLevel - 1) * _settings.AttackPerLevel;
+        var magic = _settings.BaseMagicPower + (skillLevels.MagicLevel - 1) * _settings.MagicPerLevel;
+        var speech = _settings.BaseSpeechPower + (skillLevels.SpeechLevel - 1) * _settings.SpeechPerLevel;
+        var defense = _settings.BaseDefensePower + (skillLevels.DefenseLevel - 1) * _settings.DefensePerLevel;
 
         // Ensure minimums
         return new PlayerStats(
-            MaxHp: Math.Max(1, hp),
-            AttackPower: Math.Max(1, attack),
-            MagicPower: Math.Max(1, magic),
-            SpeechPower: Math.Max(1, speech),
-            DefensePower: Math.Max(0, defense)
+            Math.Max(1, hp),
+            Math.Max(1, attack),
+            Math.Max(1, magic),
+            Math.Max(1, speech),
+            Math.Max(0, defense)
         );
     }
 
@@ -72,7 +72,7 @@ public class PlayerProgressionService(IOptions<ProgressionSettings> options) : I
     /// <inheritdoc />
     public int CalculateSkillXp(int dungeonLevel)
     {
-        return _settings.BaseSkillXp + (dungeonLevel * _settings.SkillXpPerDungeonLevel);
+        return _settings.BaseSkillXp + dungeonLevel * _settings.SkillXpPerDungeonLevel;
     }
 
     /// <inheritdoc />

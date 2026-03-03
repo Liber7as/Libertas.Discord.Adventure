@@ -8,16 +8,18 @@ using Microsoft.Extensions.Options;
 namespace Libertas.Discord.Adventure.Discord;
 
 /// <summary>
-/// Handles Discord events (messages and button interactions) for the adventure bot.
-/// Routes text commands to the command service and combat actions to the session manager.
+///     Handles Discord events (messages and button interactions) for the adventure bot.
+///     Routes text commands to the command service and combat actions to the session manager.
 /// </summary>
 /// <remarks>
-/// <para>Message handling and button interactions are queued to a background worker
-/// to avoid blocking the Discord gateway connection.</para>
-/// <para>Button interactions are parsed from custom IDs in the format "action-{actionId}-{channelId}".</para>
+///     <para>
+///         Message handling and button interactions are queued to a background worker
+///         to avoid blocking the Discord gateway connection.
+///     </para>
+///     <para>Button interactions are parsed from custom IDs in the format "action-{actionId}-{channelId}".</para>
 /// </remarks>
 /// <remarks>
-/// Creates a new DiscordEventHandler instance.
+///     Creates a new DiscordEventHandler instance.
 /// </remarks>
 public sealed class DiscordEventHandler(
     DiscordSocketClient client,
@@ -32,15 +34,15 @@ public sealed class DiscordEventHandler(
     private readonly DiscordSocketClient _client = client ?? throw new ArgumentNullException(nameof(client));
     private readonly CommandService _commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
     private readonly ILogger<DiscordEventHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly MessageService _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly AdventureSessionManager _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
     private readonly DiscordSettings _settings = options?.Value ?? throw new ArgumentNullException(nameof(options));
     private readonly IBackgroundWorkQueue _workQueue = workQueue ?? throw new ArgumentNullException(nameof(workQueue));
-    private readonly MessageService _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
 
     /// <summary>
-    /// Handles incoming Discord messages, routing commands to the command service.
-    /// Non-command messages are ignored.
+    ///     Handles incoming Discord messages, routing commands to the command service.
+    ///     Non-command messages are ignored.
     /// </summary>
     /// <param name="message">The received message.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -100,8 +102,8 @@ public sealed class DiscordEventHandler(
     }
 
     /// <summary>
-    /// Handles combat action button clicks from players.
-    /// Parses the action from the button's custom ID and records it in the session.
+    ///     Handles combat action button clicks from players.
+    ///     Parses the action from the button's custom ID and records it in the session.
     /// </summary>
     /// <param name="component">The button interaction component.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -169,6 +171,7 @@ public sealed class DiscordEventHandler(
                     {
                         // ignore followup failures
                     }
+
                     return;
                 }
 
@@ -184,7 +187,6 @@ public sealed class DiscordEventHandler(
                 {
                     // ignore followup failures
                 }
-
             }, cancellationToken);
         }
         catch (Exception ex)

@@ -1,24 +1,25 @@
 using Libertas.Discord.Adventure.Core.GameModels;
 using Libertas.Discord.Adventure.Core.Services;
-using Libertas.Discord.Adventure.Core.Services.Actions;
 using Libertas.Discord.Adventure.Core.Services.Phases;
+using Moq;
 using NUnit.Framework;
-using Moq; // Added for mocking dependencies
+
+// Added for mocking dependencies
 
 namespace Libertas.Discord.Adventure.Core.Tests.Phases;
 
 [TestFixture]
 public class MobPhaseProcessorTests
 {
-    private MobPhaseProcessor _processor = null!;
-    private Mock<IActionResolutionService> _actionResolutionServiceMock = null!;
-
     [SetUp]
     public void SetUp()
     {
         _actionResolutionServiceMock = new Mock<IActionResolutionService>();
         _processor = new MobPhaseProcessor(_actionResolutionServiceMock.Object);
     }
+
+    private MobPhaseProcessor _processor = null!;
+    private Mock<IActionResolutionService> _actionResolutionServiceMock = null!;
 
     [Test]
     public void Execute_ShouldHandleMobActions()

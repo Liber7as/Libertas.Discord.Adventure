@@ -4,17 +4,17 @@ using Microsoft.Extensions.Options;
 namespace Libertas.Discord.Adventure.Core.Services;
 
 /// <summary>
-/// Provides localized/narrative text for combat actions using random templates from settings.
+///     Provides localized/narrative text for combat actions using random templates from settings.
 /// </summary>
 /// <remarks>
-/// Centralizes all narrative and feedback text for player and mob actions.
+///     Centralizes all narrative and feedback text for player and mob actions.
 /// </remarks>
 public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<LocalizationSettings> options) : IActionLocalizationService
 {
     private readonly LocalizationSettings _settings = options.Value;
 
     /// <summary>
-    /// Gets a teaser message for the start of an adventure.
+    ///     Gets a teaser message for the start of an adventure.
     /// </summary>
     public string GetTeaserMessage()
     {
@@ -23,7 +23,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized attack message.
+    ///     Gets a localized attack message.
     /// </summary>
     public string GetAttackMessage(string actor, string target, int damage, int oldHp, int newHp)
     {
@@ -32,7 +32,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized critical attack message.
+    ///     Gets a localized critical attack message.
     /// </summary>
     public string GetAttackCritMessage(string actor, string target, int damage, int oldHp, int newHp)
     {
@@ -41,7 +41,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed attack.
+    ///     Gets a localized message for a failed attack.
     /// </summary>
     public string GetAttackNothingMessage(string actor)
     {
@@ -50,7 +50,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized magic attack message.
+    ///     Gets a localized magic attack message.
     /// </summary>
     public string GetMagicMessage(string actor, string target, int damage, int oldHp, int newHp)
     {
@@ -59,7 +59,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized critical magic attack message.
+    ///     Gets a localized critical magic attack message.
     /// </summary>
     public string GetMagicCritMessage(string actor, string target, int damage, int oldHp, int newHp)
     {
@@ -68,7 +68,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed magic attack.
+    ///     Gets a localized message for a failed magic attack.
     /// </summary>
     public string GetMagicNoTargetMessage(string actor)
     {
@@ -77,7 +77,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed talk action.
+    ///     Gets a localized message for a failed talk action.
     /// </summary>
     public string GetTalkNoTargetMessage(string actor)
     {
@@ -86,7 +86,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a successful talk action.
+    ///     Gets a localized message for a successful talk action.
     /// </summary>
     public string GetTalkSuccessMessage(string actor, string target)
     {
@@ -95,7 +95,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed talk action.
+    ///     Gets a localized message for a failed talk action.
     /// </summary>
     public string GetTalkFailMessage(string actor, string target)
     {
@@ -104,7 +104,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed pray action.
+    ///     Gets a localized message for a failed pray action.
     /// </summary>
     public string GetPrayNoTargetMessage(string actor)
     {
@@ -113,7 +113,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a successful pray action.
+    ///     Gets a localized message for a successful pray action.
     /// </summary>
     public string GetPraySuccessMessage(string actor, string target)
     {
@@ -122,7 +122,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed pray action.
+    ///     Gets a localized message for a failed pray action.
     /// </summary>
     public string GetPrayFailMessage(string actor)
     {
@@ -131,7 +131,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a successful pray heal.
+    ///     Gets a localized message for a successful pray heal.
     /// </summary>
     public string GetPrayHealMessage(string actor, int heal, int oldHp, int newHp)
     {
@@ -140,7 +140,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a successful run action.
+    ///     Gets a localized message for a successful run action.
     /// </summary>
     public string GetRunSuccessMessage(string actor)
     {
@@ -149,7 +149,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed run action.
+    ///     Gets a localized message for a failed run action.
     /// </summary>
     public string GetRunFailMessage(string actor)
     {
@@ -158,7 +158,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed run action due to being outnumbered.
+    ///     Gets a localized message for a failed run action due to being outnumbered.
     /// </summary>
     public string GetRunFailOutnumberedMessage(string actor)
     {
@@ -167,7 +167,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a mob attack.
+    ///     Gets a localized message for a mob attack.
     /// </summary>
     public string GetMobAttackMessage(string actor, string target, int damage, int oldHp, int newHp)
     {
@@ -176,7 +176,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for damage reduction.
+    ///     Gets a localized message for damage reduction.
     /// </summary>
     public string GetDamageReducedMessage(string target, int reduction)
     {
@@ -185,7 +185,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a mob being killed.
+    ///     Gets a localized message for a mob being killed.
     /// </summary>
     public string GetMobKilledMessage(string killer, string mob)
     {
@@ -194,7 +194,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for loot earned from a mob.
+    ///     Gets a localized message for loot earned from a mob.
     /// </summary>
     public string GetLootMessage(string mob, int gold)
     {
@@ -203,7 +203,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for loot remainder distribution.
+    ///     Gets a localized message for loot remainder distribution.
     /// </summary>
     public string GetLootRemainderMessage(int remainder)
     {
@@ -212,7 +212,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for party loot summary.
+    ///     Gets a localized message for party loot summary.
     /// </summary>
     public string GetPartyLootSummaryMessage(int totalGold, int aliveCount)
     {
@@ -221,7 +221,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a player being killed by a mob.
+    ///     Gets a localized message for a player being killed by a mob.
     /// </summary>
     public string GetPlayerKilledMessage(string mob, string player)
     {
@@ -230,7 +230,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a successful heal action.
+    ///     Gets a localized message for a successful heal action.
     /// </summary>
     public string GetHealMessage(string healer, string target, int amount, int oldHp, int newHp)
     {
@@ -239,7 +239,7 @@ public class ActionLocalizationService(IRandomNumberGenerator rng, IOptions<Loca
     }
 
     /// <summary>
-    /// Gets a localized message for a failed heal action.
+    ///     Gets a localized message for a failed heal action.
     /// </summary>
     public string GetHealNoTargetMessage(string healer)
     {

@@ -4,20 +4,20 @@ using Microsoft.Extensions.Logging;
 namespace Libertas.Discord.Adventure.Core.Services.Phases;
 
 /// <summary>
-/// Handles the player phase of the round, where players and bots take actions.
+///     Handles the player phase of the round, where players and bots take actions.
 /// </summary>
 public class PlayerPhaseProcessor(
     IBotService botService,
     IActionResolutionService actionResolutionService,
     ILogger<PlayerPhaseProcessor> logger)
 {
-    private readonly IBotService _botService = botService;
     private readonly IActionResolutionService _actionResolutionService = actionResolutionService;
+    private readonly IBotService _botService = botService;
     private readonly ILogger<PlayerPhaseProcessor> _logger = logger;
 
     /// <summary>
-    /// Executes all player actions in order. Dead players are skipped.
-    /// Bots use AI to decide their actions; humans use provided actions or default to Run.
+    ///     Executes all player actions in order. Dead players are skipped.
+    ///     Bots use AI to decide their actions; humans use provided actions or default to Run.
     /// </summary>
     public void Execute(
         List<PlayerState> playerList,

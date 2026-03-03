@@ -22,11 +22,11 @@ public class HealActionHandlerTests
         var handler = new HealActionHandler(calc, loc, progression, xpMock.Object);
 
         var healer = TestEntityFactory.CreatePlayer("Healer", magicPower: 10);
-        var injured = TestEntityFactory.CreatePlayer("Wounded", maxHp: 30);
+        var injured = TestEntityFactory.CreatePlayer("Wounded");
         injured.CurrentHp = 10;
 
         var players = new List<PlayerState> { healer, injured };
-        var mobs = new List<MobState> { TestEntityFactory.CreateWeakMob("Goblin") };
+        var mobs = new List<MobState> { TestEntityFactory.CreateWeakMob() };
         var messages = new List<string>();
 
         var context = new CombatContext<PlayerState>(1, healer, players, mobs, messages);

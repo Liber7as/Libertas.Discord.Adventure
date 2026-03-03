@@ -24,7 +24,7 @@ public class TalkActionHandlerTests
         var handler = new TalkActionHandler(calc, loc, progression, xpMock.Object, lootMock.Object, damageMock.Object);
 
         var player = TestEntityFactory.CreatePlayer("Diplomat", speechPower: 10);
-        var mob = TestEntityFactory.CreateWeakMob("Goblin");
+        var mob = TestEntityFactory.CreateWeakMob();
 
         var players = new List<PlayerState> { player };
         var mobs = new List<MobState> { mob };

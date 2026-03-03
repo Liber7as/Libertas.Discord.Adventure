@@ -5,23 +5,27 @@ using Microsoft.Extensions.Logging;
 namespace Libertas.Discord.Adventure.Core.Services;
 
 /// <summary>
-/// Resolves combat actions by delegating to specialized action handlers.
-/// Uses the Strategy pattern - each action type has its own handler implementation.
+///     Resolves combat actions by delegating to specialized action handlers.
+///     Uses the Strategy pattern - each action type has its own handler implementation.
 /// </summary>
 /// <remarks>
-/// <para>This service acts as a dispatcher, routing player and mob actions to the appropriate handlers.
-/// All game logic is contained within the individual action handlers.</para>
-/// <para>At construction time, validates that all <see cref="PlayerAction"/> enum values have
-/// corresponding handlers to catch configuration errors early.</para>
+///     <para>
+///         This service acts as a dispatcher, routing player and mob actions to the appropriate handlers.
+///         All game logic is contained within the individual action handlers.
+///     </para>
+///     <para>
+///         At construction time, validates that all <see cref="PlayerAction" /> enum values have
+///         corresponding handlers to catch configuration errors early.
+///     </para>
 /// </remarks>
 public class ActionResolutionService : IActionResolutionService
 {
-    private readonly Dictionary<PlayerAction, IPlayerActionHandler> _playerHandlers;
-    private readonly IMobActionHandler _mobHandler;
     private readonly ILogger<ActionResolutionService> _logger;
+    private readonly IMobActionHandler _mobHandler;
+    private readonly Dictionary<PlayerAction, IPlayerActionHandler> _playerHandlers;
 
     /// <summary>
-    /// Creates a new ActionResolutionService with the provided handlers.
+    ///     Creates a new ActionResolutionService with the provided handlers.
     /// </summary>
     /// <param name="playerHandlers">Collection of player action handlers (one per action type).</param>
     /// <param name="mobHandler">Handler for mob attack actions.</param>

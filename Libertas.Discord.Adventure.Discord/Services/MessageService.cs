@@ -1,31 +1,31 @@
-﻿using Discord;
+﻿using System.Text;
+using Discord;
 using Discord.WebSocket;
 using Libertas.Discord.Adventure.Core.GameModels;
 using Libertas.Discord.Adventure.Core.Services;
 using Microsoft.Extensions.Logging;
-using System.Text;
 
 namespace Libertas.Discord.Adventure.Discord.Services;
 
 /// <summary>
-/// Helper for building and sending adventure-related Discord messages.
-/// Encapsulates logic for creating combat components, posting round information, and updating the
-/// persistent combat message used to collect player actions.
+///     Helper for building and sending adventure-related Discord messages.
+///     Encapsulates logic for creating combat components, posting round information, and updating the
+///     persistent combat message used to collect player actions.
 /// </summary>
 /// <remarks>
-/// This class resolves the target channel from an <see cref="AdventureSession"/> and is intended
-/// to be used from background services and event handlers. Methods do not throw on missing channels
-/// and instead log warnings to keep Discord event handling resilient.
+///     This class resolves the target channel from an <see cref="AdventureSession" /> and is intended
+///     to be used from background services and event handlers. Methods do not throw on missing channels
+///     and instead log warnings to keep Discord event handling resilient.
 /// </remarks>
 public class MessageService(DiscordSocketClient client, ILogger<MessageService> logger, IActionLocalizationService localization)
 {
     private readonly DiscordSocketClient _client = client ?? throw new ArgumentNullException(nameof(client));
-    private readonly ILogger<MessageService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IActionLocalizationService _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+    private readonly ILogger<MessageService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>
-    /// Sends an initial round information message to the session channel containing a teaser,
-    /// mob details, and the next-round timestamp.
+    ///     Sends an initial round information message to the session channel containing a teaser,
+    ///     mob details, and the next-round timestamp.
     /// </summary>
     /// <param name="session">Session containing channel and mob data.</param>
     /// <param name="round">Round number within the current level.</param>
@@ -47,8 +47,8 @@ public class MessageService(DiscordSocketClient client, ILogger<MessageService> 
     }
 
     /// <summary>
-    /// Updates the existing persistent combat message's button components to reflect current
-    /// action counts from <see cref="AdventureSession.PendingActions"/>.
+    ///     Updates the existing persistent combat message's button components to reflect current
+    ///     action counts from <see cref="AdventureSession.PendingActions" />.
     /// </summary>
     public async Task UpdateCombatButtonsAsync(AdventureSession session)
     {
@@ -78,12 +78,12 @@ public class MessageService(DiscordSocketClient client, ILogger<MessageService> 
     }
 
     /// <summary>
-    /// Sends the combat action buttons as a new message for the session and stores the message id
-    /// on the provided session so it can be updated later.
+    ///     Sends the combat action buttons as a new message for the session and stores the message id
+    ///     on the provided session so it can be updated later.
     /// </summary>
     /// <summary>
-    /// Sends a new combat message containing action buttons for the session and stores the message id
-    /// on the session for subsequent updates.
+    ///     Sends a new combat message containing action buttons for the session and stores the message id
+    ///     on the session for subsequent updates.
     /// </summary>
     public async Task SendCombatMessageAsync(AdventureSession session)
     {
@@ -109,11 +109,11 @@ public class MessageService(DiscordSocketClient client, ILogger<MessageService> 
     }
 
     /// <summary>
-    /// Deletes the session's stored combat message if one exists and clears the id.
-    /// This is safe to call even if the id is null.
+    ///     Deletes the session's stored combat message if one exists and clears the id.
+    ///     This is safe to call even if the id is null.
     /// </summary>
     /// <summary>
-    /// Deletes and clears the session's stored combat message id. Safe to call if no id exists.
+    ///     Deletes and clears the session's stored combat message id. Safe to call if no id exists.
     /// </summary>
     public async Task DeleteCombatMessageAsync(AdventureSession session)
     {
@@ -151,13 +151,13 @@ public class MessageService(DiscordSocketClient client, ILogger<MessageService> 
     }
 
     /// <summary>
-    /// Rebuilds the combat component (refreshing the per-action counts) and updates the existing
-    /// combat message stored on the session. This is intentionally the same behavior as
-    /// UpdateCombatButtonsAsync but provided under the name expected by the event handler.
+    ///     Rebuilds the combat component (refreshing the per-action counts) and updates the existing
+    ///     combat message stored on the session. This is intentionally the same behavior as
+    ///     UpdateCombatButtonsAsync but provided under the name expected by the event handler.
     /// </summary>
     /// <summary>
-    /// Rebuilds and applies the combat component to the stored combat message. Provided for
-    /// compatibility with event handler naming.
+    ///     Rebuilds and applies the combat component to the stored combat message. Provided for
+    ///     compatibility with event handler naming.
     /// </summary>
     public async Task UpdateCombatMessageAsync(AdventureSession session)
     {
@@ -188,7 +188,7 @@ public class MessageService(DiscordSocketClient client, ILogger<MessageService> 
     }
 
     /// <summary>
-    /// Posts the compact combat log and a status summary for the completed round to the session channel.
+    ///     Posts the compact combat log and a status summary for the completed round to the session channel.
     /// </summary>
     /// <param name="session">The session the round belongs to.</param>
     /// <param name="result">Round result including player/mob states and messages.</param>

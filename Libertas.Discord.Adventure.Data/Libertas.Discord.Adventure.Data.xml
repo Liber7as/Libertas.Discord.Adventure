@@ -1,307 +1,335 @@
 <?xml version="1.0"?>
+
 <doc>
-    <assembly>
-        <name>Libertas.Discord.Adventure.Data</name>
-    </assembly>
-    <members>
-        <member name="T:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter">
-            <summary>
-            Adapter that implements <see cref="T:Libertas.Discord.Adventure.Core.Data.IMobPresetService"/>
-            using the EF Core <see cref="T:Libertas.Discord.Adventure.Data.AdventureContext"/>. Returns lightweight DTOs used by core.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.#ctor(Microsoft.EntityFrameworkCore.IDbContextFactory{Libertas.Discord.Adventure.Data.AdventureContext},Libertas.Discord.Adventure.Core.Services.IRandomNumberGenerator,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter})">
-            <summary>
-            Adapter that implements <see cref="T:Libertas.Discord.Adventure.Core.Data.IMobPresetService"/>
-            using the EF Core <see cref="T:Libertas.Discord.Adventure.Data.AdventureContext"/>. Returns lightweight DTOs used by core.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.GetByIdAsync(System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Gets a mob preset entity by id, or <c>null</c> when not found.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.GetAllAsync(System.Threading.CancellationToken)">
-            <summary>
-            Returns all mob preset entities.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.GetRandomAsync(System.Collections.Generic.IReadOnlyCollection{System.Int32},System.Threading.CancellationToken)">
-            <summary>
-            Selects and returns a random <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobPresetDto"/>, optionally excluding given preset ids.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter">
-            <summary>
-            Adapter that implements core-facing IPlayerRepository using the EF Player entity.
-            Maps between persistent Player entity and core PlayerState.
-            </summary>
-            <summary>
-            Repository adapter that maps EF <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player"/> entities to core <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState"/> objects
-            and persists changes from core back into the database.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.#ctor(Microsoft.EntityFrameworkCore.IDbContextFactory{Libertas.Discord.Adventure.Data.AdventureContext},Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter})">
-            <summary>
-            Adapter that implements core-facing IPlayerRepository using the EF Player entity.
-            Maps between persistent Player entity and core PlayerState.
-            </summary>
-            <summary>
-            Repository adapter that maps EF <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player"/> entities to core <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState"/> objects
-            and persists changes from core back into the database.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetByIdAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerId,System.Threading.CancellationToken)">
-            <summary>
-            Loads a player by id and maps it to a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState"/>. Returns <c>null</c> if not found.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetOrCreateAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerId,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Retrieves an existing player state or creates a new persistent player record when none exists.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.UpdateAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerState,System.Threading.CancellationToken)">
-            <summary>
-            Persists changes from a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState"/> back to the underlying <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player"/> entity.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetTopPlayersByTotalLevelAsync(System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Returns the top players ordered by the sum of their skill levels.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetTopPlayersByHighestDungeonAsync(System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Returns the top players ordered by highest dungeon reached.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetTopPlayersByGoldAsync(System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Returns the top players ordered by total gold.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.AdventureContext">
-            <summary>
-            EF Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> for the adventure application.
-            Applies entity configurations from the data assembly.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.AdventureContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Libertas.Discord.Adventure.Data.AdventureContext})">
-            <summary>
-            EF Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> for the adventure application.
-            Applies entity configurations from the data assembly.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.AdventureContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <summary>
-            Configure the model by applying all IEntityTypeConfiguration implementations
-            from the data assembly.
-            </summary>
-            <param name="modelBuilder">Model builder provided by EF Core.</param>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Configurations.MobPresetConfiguration">
-            <summary>
-            EF Core configuration for the <see cref="T:Libertas.Discord.Adventure.Data.Entities.MobPreset"/> entity.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Configurations.MobPresetConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Libertas.Discord.Adventure.Data.Entities.MobPreset})">
-            <summary>
-            Configure entity mapping and seed data.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Configurations.PlayerConfiguration">
-            <summary>
-            EF Core configuration for the Player entity.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Configurations.PlayerConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Libertas.Discord.Adventure.Data.Entities.Player})">
-            <summary>
-            Configure the EF mapping for the <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player"/> entity including defaults, keys and indexes.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Entities.IEntity">
-            <summary>
-            Marker interface for EF entities exposing an integer Id property.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.IEntity.Id">
-            <summary>
-            Primary key identifier.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Entities.MobPreset">
-            <summary>
-            Persistent entity representing a mob preset used to spawn mobs in-game.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.Id">
-            <summary>
-            Primary key identifier.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.Name">
-            <summary>
-            Display name of the mob preset.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.ImageUrl">
-            <summary>
-            Optional image URL representing the mob.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MinHealth">
-            <summary>
-            Minimum health for randomized mob instances from this preset.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MaxHealth">
-            <summary>
-            Maximum health for randomized mob instances from this preset.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MinAttackPower">
-            <summary>
-            Minimum attack power for randomized mob instances.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MaxAttackPower">
-            <summary>
-            Maximum attack power for randomized mob instances.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Entities.Player">
-            <summary>
-            Persistent player data stored in the database.
-            Tracks individual skill progression and lifetime statistics.
-            Note: Does not implement IEntity because Id is ulong (Discord user ID), not int.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.Id">
-            <summary>
-            Unique identifier for the player (Discord user ID).
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.Username">
-            <summary>
-            Display name of the player (updated from Discord on each login).
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.AttackLevel">
-            <summary>
-            Attack skill level (increases by attacking).
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.AttackXp">
-            <summary>
-            Total Attack XP accumulated.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.MagicLevel">
-            <summary>
-            Magic skill level (increases by casting magic or healing).
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.MagicXp">
-            <summary>
-            Total Magic XP accumulated.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.SpeechLevel">
-            <summary>
-            Speech skill level (increases by talking/diplomacy).
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.SpeechXp">
-            <summary>
-            Total Speech XP accumulated.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.DefenseLevel">
-            <summary>
-            Defense skill level (increases by taking damage).
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.DefenseXp">
-            <summary>
-            Total Defense XP accumulated.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalGold">
-            <summary>
-            Total gold accumulated across all sessions.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalKills">
-            <summary>
-            Total number of mobs killed across all sessions.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalDeaths">
-            <summary>
-            Total number of deaths across all sessions.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.HighestDungeonLevel">
-            <summary>
-            Highest dungeon level reached in any session.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.CreatedAt">
-            <summary>
-            When the player first joined.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.LastActiveAt">
-            <summary>
-            When the player was last active in a session.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalLevel">
-            <summary>
-            Sum of all skill levels.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.CombatLevel">
-            <summary>
-            Average skill level (combat level).
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Migrations.Init">
-            <inheritdoc />
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Migrations.Init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Migrations.Init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity">
-            <inheritdoc />
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Data.ServiceCollectionExtensions">
-            <summary>
-            Extension methods for registering data-layer services into an <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Data.ServiceCollectionExtensions.AddAdventureDataSqlite(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
-            <summary>
-            Registers data-related services for the adventure application using a SQLite provider.
-            </summary>
-            <param name="services">The service collection to register into.</param>
-            <param name="connectionString">SQLite connection string.</param>
-        </member>
-    </members>
+  <assembly>
+    <name>Libertas.Discord.Adventure.Data</name>
+  </assembly>
+  <members>
+    <member name="T:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter">
+      <summary>
+        Adapter that implements <see cref="T:Libertas.Discord.Adventure.Core.Data.IMobPresetService" />
+        using the EF Core <see cref="T:Libertas.Discord.Adventure.Data.AdventureContext" />. Returns lightweight DTOs used by core.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.#ctor(Microsoft.EntityFrameworkCore.IDbContextFactory{Libertas.Discord.Adventure.Data.AdventureContext},Libertas.Discord.Adventure.Core.Services.IRandomNumberGenerator,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter})">
+      <summary>
+        Adapter that implements <see cref="T:Libertas.Discord.Adventure.Core.Data.IMobPresetService" />
+        using the EF Core <see cref="T:Libertas.Discord.Adventure.Data.AdventureContext" />. Returns lightweight DTOs used by core.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.GetByIdAsync(System.Int32,System.Threading.CancellationToken)">
+      <summary>
+        Gets a mob preset entity by id, or <c>null</c> when not found.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.GetAllAsync(System.Threading.CancellationToken)">
+      <summary>
+        Returns all mob preset entities.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter.GetRandomAsync(System.Collections.Generic.IReadOnlyCollection{System.Int32},System.Threading.CancellationToken)">
+      <summary>
+        Selects and returns a random <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobPresetDto" />, optionally excluding given preset ids.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter">
+      <summary>
+        Adapter that implements core-facing IPlayerRepository using the EF Player entity.
+        Maps between persistent Player entity and core PlayerState.
+      </summary>
+      <summary>
+        Repository adapter that maps EF <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player" /> entities to core
+        <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState" /> objects
+        and persists changes from core back into the database.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.#ctor(Microsoft.EntityFrameworkCore.IDbContextFactory{Libertas.Discord.Adventure.Data.AdventureContext},Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter})">
+      <summary>
+        Adapter that implements core-facing IPlayerRepository using the EF Player entity.
+        Maps between persistent Player entity and core PlayerState.
+      </summary>
+      <summary>
+        Repository adapter that maps EF <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player" /> entities to core
+        <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState" /> objects
+        and persists changes from core back into the database.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetByIdAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerId,System.Threading.CancellationToken)">
+      <summary>
+        Loads a player by id and maps it to a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState" />. Returns
+        <c>null</c> if not found.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetOrCreateAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerId,System.String,System.Threading.CancellationToken)">
+      <summary>
+        Retrieves an existing player state or creates a new persistent player record when none exists.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.UpdateAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerState,System.Threading.CancellationToken)">
+      <summary>
+        Persists changes from a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState" /> back to the underlying
+        <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player" /> entity.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetTopPlayersByTotalLevelAsync(System.Int32,System.Threading.CancellationToken)">
+      <summary>
+        Returns the top players ordered by the sum of their skill levels.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetTopPlayersByHighestDungeonAsync(System.Int32,System.Threading.CancellationToken)">
+      <summary>
+        Returns the top players ordered by highest dungeon reached.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter.GetTopPlayersByGoldAsync(System.Int32,System.Threading.CancellationToken)">
+      <summary>
+        Returns the top players ordered by total gold.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.AdventureContext">
+      <summary>
+        EF Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext" /> for the adventure application.
+        Applies entity configurations from the data assembly.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.AdventureContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Libertas.Discord.Adventure.Data.AdventureContext})">
+      <summary>
+        EF Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext" /> for the adventure application.
+        Applies entity configurations from the data assembly.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.AdventureContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+      <summary>
+        Configure the model by applying all IEntityTypeConfiguration implementations
+        from the data assembly.
+      </summary>
+      <param name="modelBuilder">Model builder provided by EF Core.</param>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Configurations.MobPresetConfiguration">
+      <summary>
+        EF Core configuration for the <see cref="T:Libertas.Discord.Adventure.Data.Entities.MobPreset" /> entity.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Configurations.MobPresetConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Libertas.Discord.Adventure.Data.Entities.MobPreset})">
+      <summary>
+        Configure entity mapping and seed data.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Configurations.PlayerConfiguration">
+      <summary>
+        EF Core configuration for the Player entity.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Configurations.PlayerConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Libertas.Discord.Adventure.Data.Entities.Player})">
+      <summary>
+        Configure the EF mapping for the <see cref="T:Libertas.Discord.Adventure.Data.Entities.Player" /> entity including defaults, keys and indexes.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Entities.IEntity">
+      <summary>
+        Marker interface for EF entities exposing an integer Id property.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.IEntity.Id">
+      <summary>
+        Primary key identifier.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Entities.MobPreset">
+      <summary>
+        Persistent entity representing a mob preset used to spawn mobs in-game.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.Id">
+      <summary>
+        Primary key identifier.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.Name">
+      <summary>
+        Display name of the mob preset.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.ImageUrl">
+      <summary>
+        Optional image URL representing the mob.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MinHealth">
+      <summary>
+        Minimum health for randomized mob instances from this preset.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MaxHealth">
+      <summary>
+        Maximum health for randomized mob instances from this preset.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MinAttackPower">
+      <summary>
+        Minimum attack power for randomized mob instances.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.MobPreset.MaxAttackPower">
+      <summary>
+        Maximum attack power for randomized mob instances.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Entities.Player">
+      <summary>
+        Persistent player data stored in the database.
+        Tracks individual skill progression and lifetime statistics.
+        Note: Does not implement IEntity because Id is ulong (Discord user ID), not int.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.Id">
+      <summary>
+        Unique identifier for the player (Discord user ID).
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.Username">
+      <summary>
+        Display name of the player (updated from Discord on each login).
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.AttackLevel">
+      <summary>
+        Attack skill level (increases by attacking).
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.AttackXp">
+      <summary>
+        Total Attack XP accumulated.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.MagicLevel">
+      <summary>
+        Magic skill level (increases by casting magic or healing).
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.MagicXp">
+      <summary>
+        Total Magic XP accumulated.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.SpeechLevel">
+      <summary>
+        Speech skill level (increases by talking/diplomacy).
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.SpeechXp">
+      <summary>
+        Total Speech XP accumulated.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.DefenseLevel">
+      <summary>
+        Defense skill level (increases by taking damage).
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.DefenseXp">
+      <summary>
+        Total Defense XP accumulated.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalGold">
+      <summary>
+        Total gold accumulated across all sessions.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalKills">
+      <summary>
+        Total number of mobs killed across all sessions.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalDeaths">
+      <summary>
+        Total number of deaths across all sessions.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.HighestDungeonLevel">
+      <summary>
+        Highest dungeon level reached in any session.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.CreatedAt">
+      <summary>
+        When the player first joined.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.LastActiveAt">
+      <summary>
+        When the player was last active in a session.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.TotalLevel">
+      <summary>
+        Sum of all skill levels.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Data.Entities.Player.CombatLevel">
+      <summary>
+        Average skill level (combat level).
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Migrations.Init">
+      <inheritdoc />
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Migrations.Init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+      <inheritdoc />
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Migrations.Init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+      <inheritdoc />
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+      <inheritdoc />
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity">
+      <inheritdoc />
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+      <inheritdoc />
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+      <inheritdoc />
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.Migrations.AddPlayerEntity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+      <inheritdoc />
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Data.ServiceCollectionExtensions">
+      <summary>
+        Extension methods for registering data-layer services into an
+        <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Data.ServiceCollectionExtensions.AddAdventureDataSqlite(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+      <summary>
+        Registers data-related services for the adventure application using a SQLite provider.
+      </summary>
+      <param name="services">The service collection to register into.</param>
+      <param name="connectionString">SQLite connection string.</param>
+    </member>
+  </members>
 </doc>

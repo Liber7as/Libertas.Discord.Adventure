@@ -1,10 +1,12 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Libertas.Discord.Adventure.Core.Data;
 using Libertas.Discord.Adventure.Core.Services;
 using Libertas.Discord.Adventure.Core.Services.Actions;
 using Libertas.Discord.Adventure.Core.Services.Combat;
 using Libertas.Discord.Adventure.Core.Settings;
+using Libertas.Discord.Adventure.Data.Adapters;
 using Libertas.Discord.Adventure.Discord.Data;
 using Libertas.Discord.Adventure.Discord.Services;
 using Microsoft.Extensions.Configuration;
@@ -109,8 +111,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPlayerService, PlayerService>();
 
         // Core-facing data adapters (implementations live in the Data project)
-        services.AddScoped<Libertas.Discord.Adventure.Core.Data.IPlayerRepository, Libertas.Discord.Adventure.Data.Adapters.PlayerRepositoryAdapter>();
-        services.AddScoped<Libertas.Discord.Adventure.Core.Data.IMobPresetService, Libertas.Discord.Adventure.Data.Adapters.MobPresetServiceAdapter>();
+        services.AddScoped<IPlayerRepository, PlayerRepositoryAdapter>();
+        services.AddScoped<IMobPresetService, MobPresetServiceAdapter>();
 
         return services;
     }

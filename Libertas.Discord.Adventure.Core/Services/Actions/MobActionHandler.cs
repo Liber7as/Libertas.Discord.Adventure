@@ -3,7 +3,7 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Core.Services.Actions;
 
 /// <summary>
-/// Handles mob attack actions - targets players with preference for lowest HP.
+///     Handles mob attack actions - targets players with preference for lowest HP.
 /// </summary>
 public class MobActionHandler(
     ICombatCalculator calculator,

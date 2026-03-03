@@ -3,7 +3,7 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Core.Services.Actions;
 
 /// <summary>
-/// Base class for player action handlers providing common functionality.
+///     Base class for player action handlers providing common functionality.
 /// </summary>
 public abstract class PlayerActionHandlerBase(
     ICombatCalculator calculator,
@@ -11,17 +11,17 @@ public abstract class PlayerActionHandlerBase(
     IPlayerProgressionService progression) : IPlayerActionHandler
 {
     /// <summary>
-    /// Calculator used for combat math (damage, loot, etc.).
+    ///     Calculator used for combat math (damage, loot, etc.).
     /// </summary>
     protected readonly ICombatCalculator Calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
 
     /// <summary>
-    /// Localization service used to produce user-facing messages.
+    ///     Localization service used to produce user-facing messages.
     /// </summary>
     protected readonly IActionLocalizationService Localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
     /// <summary>
-    /// Progression service used to award XP and calculate level-related values.
+    ///     Progression service used to award XP and calculate level-related values.
     /// </summary>
     protected readonly IPlayerProgressionService Progression = progression ?? throw new ArgumentNullException(nameof(progression));
 
@@ -32,7 +32,7 @@ public abstract class PlayerActionHandlerBase(
     public abstract void Execute(CombatContext<PlayerState> context);
 
     /// <summary>
-    /// Awards XP for using a skill. Bots do not receive XP.
+    ///     Awards XP for using a skill. Bots do not receive XP.
     /// </summary>
     protected void AwardSkillXp(PlayerState player, SkillType skill, int dungeonLevel)
     {
@@ -58,7 +58,7 @@ public abstract class PlayerActionHandlerBase(
     }
 
     /// <summary>
-    /// Awards a kill to the actor and distributes loot.
+    ///     Awards a kill to the actor and distributes loot.
     /// </summary>
     protected void AwardKill(CombatContext<PlayerState> context, MobState mob)
     {
@@ -74,7 +74,7 @@ public abstract class PlayerActionHandlerBase(
     }
 
     /// <summary>
-    /// Distributes loot from a defeated mob to alive human players.
+    ///     Distributes loot from a defeated mob to alive human players.
     /// </summary>
     private void AwardLoot(CombatContext<PlayerState> context, MobState mob)
     {

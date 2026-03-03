@@ -1,653 +1,720 @@
 <?xml version="1.0"?>
+
 <doc>
-    <assembly>
-        <name>Libertas.Discord.Adventure.Discord</name>
-    </assembly>
-    <members>
-        <member name="T:Libertas.Discord.Adventure.Discord.Data.IPlayerService">
-            <summary>
-            Service for managing player state during combat sessions.
-            Loads persistent data from the database and calculates combat stats.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.GetOrCreateAsync(Discord.WebSocket.SocketUser,System.Threading.CancellationToken)">
-            <summary>
-            Gets or creates a player state for combat using Discord user information.
-            Loads from database if exists, creates new record if not.
-            </summary>
-            <param name="user">The Discord user.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.GetOrCreateAsync(System.UInt64,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Gets or creates a player state for combat using ID and username.
-            Loads from database if exists, creates new record if not.
-            This overload is useful for testing without Discord dependencies.
-            </summary>
-            <param name="userId">The player's unique ID (Discord user ID or test ID).</param>
-            <param name="username">The player's display name.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.SaveProgressAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerState,System.Int32,System.Boolean,System.Threading.CancellationToken)">
-            <summary>
-            Saves session progress back to the database.
-            Updates XP, gold, kills, deaths, and highest dungeon level.
-            Returns information about any skill level-ups.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.GetPlayerDataAsync(System.UInt64,System.Threading.CancellationToken)">
-            <summary>
-            Gets a player's persistent state from the repository.
-            Returns a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState"/> suitable for core usage, or null if not found.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Data.PlayerService">
-            <summary>
-            Implementation of <see cref="T:Libertas.Discord.Adventure.Discord.Data.IPlayerService"/> integrating database persistence with combat state.
-            Handles player creation, stat calculation, and progress saving.
-            </summary>
-            <remarks>
-            Constructs the player service with required dependencies.
-            </remarks>
-            <param name="playerRepository">Repository for player persistence.</param>
-            <param name="progressionService">Service for skill/stat calculations.</param>
-            <param name="logger">Logger for structured logging.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.#ctor(Libertas.Discord.Adventure.Core.Data.IPlayerRepository,Libertas.Discord.Adventure.Core.Services.IPlayerProgressionService,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Data.PlayerService})">
-            <summary>
-            Implementation of <see cref="T:Libertas.Discord.Adventure.Discord.Data.IPlayerService"/> integrating database persistence with combat state.
-            Handles player creation, stat calculation, and progress saving.
-            </summary>
-            <remarks>
-            Constructs the player service with required dependencies.
-            </remarks>
-            <param name="playerRepository">Repository for player persistence.</param>
-            <param name="progressionService">Service for skill/stat calculations.</param>
-            <param name="logger">Logger for structured logging.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.GetOrCreateAsync(Discord.WebSocket.SocketUser,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.GetOrCreateAsync(System.UInt64,System.String,System.Threading.CancellationToken)">
-            <inheritdoc />
-            <summary>
-            Gets or creates a player by Discord user ID and username, then calculates combat stats.
-            </summary>
-            <param name="userId">Discord user ID.</param>
-            <param name="username">Discord username.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>Player combat state.</returns>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.SaveProgressAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerState,System.Int32,System.Boolean,System.Threading.CancellationToken)">
-            <inheritdoc />
-            <summary>
-            Saves player progress after a session, updating XP, gold, kills, deaths, and detecting level-ups.
-            </summary>
-            <param name="playerState">Player combat state.</param>
-            <param name="dungeonLevel">Dungeon level reached.</param>
-            <param name="died">True if player died during session.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>Result containing any skill level-ups.</returns>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.GetPlayerDataAsync(System.UInt64,System.Threading.CancellationToken)">
-            <inheritdoc />
-            <summary>
-            Gets the persisted player state by ID.
-            </summary>
-            <param name="playerId">Player ID.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>The player state or null.</returns>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Data.SaveProgressResult">
-            <summary>
-            Result of saving player progress, including any level-ups.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.SaveProgressResult.#ctor(System.Collections.Generic.List{Libertas.Discord.Adventure.Discord.Data.SkillLevelUp})">
-            <summary>
-            Result of saving player progress, including any level-ups.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Data.SkillLevelUp">
-            <summary>
-            Represents a skill level-up event.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Data.SkillLevelUp.#ctor(System.String,System.Int32,System.Int32)">
-            <summary>
-            Represents a skill level-up event.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.DiscordBackgroundService">
-            <summary>
-            Background service that initializes and runs the Discord client and command modules.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.DiscordBackgroundService.#ctor(Microsoft.Extensions.Options.IOptions{Libertas.Discord.Adventure.Discord.DiscordSettings},Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.DiscordBackgroundService},Libertas.Discord.Adventure.Discord.DiscordEventHandler,Discord.WebSocket.DiscordSocketClient,Discord.Commands.CommandService,System.IServiceProvider)">
-            <summary>
-            Background service that initializes and runs the Discord client and command modules.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.DiscordBackgroundService.ExecuteAsync(System.Threading.CancellationToken)">
-            <summary>
-            Starts the Discord client, registers command modules and wires up event handlers.
-            The method blocks until cancellation is requested.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.DiscordBackgroundService.StopAsync(System.Threading.CancellationToken)">
-            <summary>
-            Stops and logs out the Discord client if connected, then delegates to base.StopAsync.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.DiscordEventHandler">
-            <summary>
-            Handles Discord events (messages and button interactions) for the adventure bot.
-            Routes text commands to the command service and combat actions to the session manager.
-            </summary>
-            <remarks>
-            <para>Message handling and button interactions are queued to a background worker
-            to avoid blocking the Discord gateway connection.</para>
-            <para>Button interactions are parsed from custom IDs in the format "action-{actionId}-{channelId}".</para>
-            </remarks>
-            <remarks>
-            Creates a new DiscordEventHandler instance.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.DiscordEventHandler.#ctor(Discord.WebSocket.DiscordSocketClient,Discord.Commands.CommandService,Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue,Libertas.Discord.Adventure.Discord.Services.MessageService,Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager,System.IServiceProvider,Microsoft.Extensions.Options.IOptions{Libertas.Discord.Adventure.Discord.DiscordSettings},Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.DiscordEventHandler})">
-            <summary>
-            Handles Discord events (messages and button interactions) for the adventure bot.
-            Routes text commands to the command service and combat actions to the session manager.
-            </summary>
-            <remarks>
-            <para>Message handling and button interactions are queued to a background worker
-            to avoid blocking the Discord gateway connection.</para>
-            <para>Button interactions are parsed from custom IDs in the format "action-{actionId}-{channelId}".</para>
-            </remarks>
-            <remarks>
-            Creates a new DiscordEventHandler instance.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.DiscordEventHandler.OnMessageReceivedAsync(Discord.WebSocket.SocketMessage,System.Threading.CancellationToken)">
-            <summary>
-            Handles incoming Discord messages, routing commands to the command service.
-            Non-command messages are ignored.
-            </summary>
-            <param name="message">The received message.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.DiscordEventHandler.OnButtonExecutedAsync(Discord.WebSocket.SocketMessageComponent,System.Threading.CancellationToken)">
-            <summary>
-            Handles combat action button clicks from players.
-            Parses the action from the button's custom ID and records it in the session.
-            </summary>
-            <param name="component">The button interaction component.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.DiscordSettings">
-            <summary>
-            Configuration settings for Discord integration. Bound from configuration (e.g. "Discord" section).
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.DiscordSettings.Token">
-            <summary>
-            Bot token used to login the Discord client.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.DiscordSettings.Prefix">
-            <summary>
-            The prefix used for commands (e.g. !admin say hello).
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Modules.AdminModule">
-            <summary>
-            Discord command module for admin-only commands.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdminModule.SayAsync(System.String)">
-            <summary>
-            Echoes the provided message back to the channel.
-            </summary>
-            <param name="text">Message to echo.</param>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Modules.AdventureModule">
-            <summary>
-            Discord command module for starting adventures, running simulations, and viewing player stats.
-            Handles the main adventure loop and player interaction commands.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.#ctor(Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager,Libertas.Discord.Adventure.Discord.Services.MessageService,Libertas.Discord.Adventure.Core.Services.IRandomNumberGenerator,Libertas.Discord.Adventure.Discord.Services.IMobFactoryService,Libertas.Discord.Adventure.Discord.Data.IPlayerService,Libertas.Discord.Adventure.Core.Services.IPlayerProgressionService)">
-            <summary>
-            Discord command module for starting adventures, running simulations, and viewing player stats.
-            Handles the main adventure loop and player interaction commands.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.StartAsync">
-            <summary>
-            Starts a new adventure session in the current channel.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.SimulateAsync">
-            <summary>
-            Runs a headless combat simulation of 4 players vs respawning mobs.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.StatsAsync">
-            <summary>
-            Displays the current player's skills, XP, and lifetime statistics.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.QueuedBackgroundService">
-            <summary>
-            Background service that processes queued work items from <see cref="T:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue"/>.
-            Ensures CPU/IO-heavy tasks are executed outside Discord event handlers for responsiveness.
-            </summary>
-            <remarks>
-            Uses a single-threaded loop to dequeue and execute work items, logging errors and shutdown events.
-            </remarks>
-            <remarks>
-            Constructs the background service with the required work queue and logger.
-            </remarks>
-            <param name="queue">Work queue to process.</param>
-            <param name="logger">Logger for structured logging.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.QueuedBackgroundService.#ctor(Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.QueuedBackgroundService})">
-            <summary>
-            Background service that processes queued work items from <see cref="T:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue"/>.
-            Ensures CPU/IO-heavy tasks are executed outside Discord event handlers for responsiveness.
-            </summary>
-            <remarks>
-            Uses a single-threaded loop to dequeue and execute work items, logging errors and shutdown events.
-            </remarks>
-            <remarks>
-            Constructs the background service with the required work queue and logger.
-            </remarks>
-            <param name="queue">Work queue to process.</param>
-            <param name="logger">Logger for structured logging.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.QueuedBackgroundService.ExecuteAsync(System.Threading.CancellationToken)">
-            <summary>
-            Main execution loop for the background service. Dequeues and runs work items until shutdown.
-            </summary>
-            <param name="stoppingToken">Cancellation token for graceful shutdown.</param>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.ServiceCollectionExtensions">
-            <summary>
-                Extension methods for registering Discord Adventure services and configuration with DI.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.ServiceCollectionExtensions.AddDiscordAdventure(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection)">
-            <summary>
-                Registers all Discord Adventure services, settings, and dependencies with the DI container.
-            </summary>
-            <param name="services">Service collection to register with.</param>
-            <param name="discordSection">Discord configuration section.</param>
-            <param name="localizationSection">Localization configuration section.</param>
-            <param name="botSection">Bot configuration section.</param>
-            <param name="progressionSection">Progression configuration section.</param>
-            <param name="combatSection">Combat configuration section.</param>
-            <returns>The updated service collection.</returns>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession">
-            <summary>
-            Represents an active adventure session in a Discord channel.
-            Contains all mutable state for an ongoing combat encounter.
-            </summary>
-            <remarks>
-            <para>Sessions are managed per-channel and persist across multiple combat rounds.</para>
-            <para>Access to session state should be synchronized using <see cref="T:System.Threading.SemaphoreSlim"/>
-            or the helper extension methods defined in <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions"/>.</para>
-            </remarks>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.ChannelId">
-            <summary>
-            The Discord channel ID where this session is active.
-            Used as the primary key for session lookup.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Level">
-            <summary>
-            Current dungeon level (difficulty scaling).
-            Increases after defeating all mobs in the current wave.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Players">
-            <summary>
-            All players in the session, including human players and AI bots.
-            Modified during combat as players join, die, or flee.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Mobs">
-            <summary>
-            All mobs in the current combat encounter.
-            Cleared and repopulated when advancing to a new level.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.PendingActions">
-            <summary>
-            Actions submitted by players for the upcoming round.
-            Keyed by player ID. Cleared after each round resolves.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.LastActivity">
-            <summary>
-            Timestamp of the last activity in this session.
-            Used for timeout detection and cleanup.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.RoundCts">
-            <summary>
-            Cancellation token source for the current round timer.
-            Cancelled when the round ends or session is terminated.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Semaphore">
-            <summary>
-            Semaphore for thread-safe access to session state.
-            Ensures only one operation modifies the session at a time.
-            </summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.CombatMessageId">
-            <summary>
-            Discord message ID of the current combat status message.
-            Updated each round to show current action counts and party status.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions">
-            <summary>
-            Convenience extensions for acquiring and using per-session locks safely.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions.LockAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager,System.UInt64,System.Func{Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
-            <summary>
-                Lock the session identified by <paramref name="channelId" /> and execute the provided function.
-                Throws if the session is not found.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions.LockAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
-            <summary>
-                Lock the given session and execute the provided function while holding the session semaphore.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager">
-            <summary>
-            Manages per-channel adventure sessions.
-            Provides thread-safe creation, lookup, action recording, round execution, and session termination.
-            </summary>
-            <remarks>
-            Sessions are stored in the <see cref="P:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.Sessions"/> dictionary keyed by Discord channel ID.
-            Public methods use internal locking to ensure session state is updated safely from concurrent Discord events.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.#ctor(Libertas.Discord.Adventure.Core.Services.IGameEngine,Libertas.Discord.Adventure.Discord.Data.IPlayerService,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager})">
-            <summary>
-            Manages per-channel adventure sessions.
-            Provides thread-safe creation, lookup, action recording, round execution, and session termination.
-            </summary>
-            <remarks>
-            Sessions are stored in the <see cref="P:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.Sessions"/> dictionary keyed by Discord channel ID.
-            Public methods use internal locking to ensure session state is updated safely from concurrent Discord events.
-            </remarks>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.Sessions">
-            <summary>
-            Active sessions keyed by Discord channel ID.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.StartSessionAsync(System.UInt64,System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Starts a new session for the specified channel and level.
-            </summary>
-            <param name="channelId">Discord channel id where the session will run.</param>
-            <param name="level">Starting dungeon level for the session.</param>
-            <param name="cancellationToken">Cancellation token to observe when creating the session.</param>
-            <returns>The created <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession"/>.</returns>
-            <exception cref="T:System.InvalidOperationException">Thrown when a session cannot be added for the channel.</exception>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.RecordActionAsync(System.UInt64,Discord.WebSocket.SocketUser,Libertas.Discord.Adventure.Core.GameModels.PlayerAction,System.Threading.CancellationToken)">
-            <summary>
-            Records a player's action for the specified channel using a Discord <see cref="T:Discord.WebSocket.SocketUser"/>.
-            Ensures the player entity exists and is added to the session before recording the action.
-            </summary>
-            <param name="channelId">Channel id where the action originated.</param>
-            <param name="user">Discord user who performed the action.</param>
-            <param name="action">Player action to record.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.RecordActionAsync(System.UInt64,Libertas.Discord.Adventure.Core.GameModels.PlayerId,Libertas.Discord.Adventure.Core.GameModels.PlayerAction,System.Threading.CancellationToken)">
-            <summary>
-            Records a player's action for the specified channel using a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerId"/>.
-            Updates the session's pending actions and last activity timestamp.
-            </summary>
-            <param name="channelId">Channel id where the action originated.</param>
-            <param name="playerId">Player identifier.</param>
-            <param name="action">Player action to record.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.ExecuteRoundAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Threading.CancellationToken)">
-            <summary>
-            Executes a single round for the provided session by delegating to the <see cref="T:Libertas.Discord.Adventure.Core.Services.IGameEngine"/>.
-            Updates the session state with the returned <see cref="T:Libertas.Discord.Adventure.Core.GameModels.RoundResult"/>.
-            </summary>
-            <param name="session">Active session to execute a round for.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>The <see cref="T:Libertas.Discord.Adventure.Core.GameModels.RoundResult"/> describing the round outcome.</returns>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.EndSessionAsync(System.UInt64,System.Threading.CancellationToken)">
-            <summary>
-            Ends and removes the session for the given channel, persists player progress, and returns summary results.
-            </summary>
-            <param name="channelId">Channel id of the session to end.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>A <see cref="T:Libertas.Discord.Adventure.Discord.Services.SessionEndResult"/> containing the ended session and any level-ups.</returns>
-            <exception cref="T:System.InvalidOperationException">Thrown if the session could not be removed.</exception>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue">
-            <summary>
-            Simple bounded background work queue used to offload CPU/IO work from Discord event handlers.
-            Stores delegates of the form <c>Func&lt;CancellationToken, Task&gt;</c> and exposes dequeue/queue operations.
-            </summary>
-            <remarks>
-            The queue uses a single reader / multiple writer bounded channel to provide backpressure
-            and to ensure tasks are processed sequentially by a single background worker.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue.#ctor(System.Int32)">
-            <summary>
-            Creates a new bounded <see cref="T:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue"/> with the provided capacity.
-            </summary>
-            <param name="capacity">Maximum number of queued work items before backpressure is applied.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue.QueueAsync(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
-            <summary>
-            Enqueues a delegate to be executed by a background consumer. This method waits
-            when the channel is full to provide backpressure.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue.DequeueAsync(System.Threading.CancellationToken)">
-            <summary>
-            Dequeues the next work delegate. This call blocks until an item becomes available
-            or the provided cancellation token is triggered.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue">
-            <summary>
-            Lightweight producer/consumer queue used to offload work from Discord event handlers
-            to background consumers.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue.QueueAsync(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
-            <summary>
-            Enqueue a work item to be executed in the background.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue.DequeueAsync(System.Threading.CancellationToken)">
-            <summary>
-            Dequeue a work item. Intended to be used by a dedicated consumer.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.IMobFactoryService">
-            <summary>
-            Factory service responsible for creating <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState"/> instances from presets
-            and scaling them for a given dungeon level.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.IMobFactoryService.CreateFromPresetAsync(Libertas.Discord.Adventure.Core.GameModels.MobPresetDto,System.Int32)">
-            <summary>
-                Create a mob from an explicit preset and scale it for the provided level.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.IMobFactoryService.CreateRandomMobForLevelAsync(System.Int32,System.Collections.Generic.IReadOnlyCollection{System.Int32},System.Threading.CancellationToken)">
-            <summary>
-                Choose a preset (optionally excluding some ids) and create a mob scaled for the provided level.
-                Returns null when no preset could be chosen.
-            </summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.MessageService">
-            <summary>
-            Helper for building and sending adventure-related Discord messages.
-            Encapsulates logic for creating combat components, posting round information, and updating the
-            persistent combat message used to collect player actions.
-            </summary>
-            <remarks>
-            This class resolves the target channel from an <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession"/> and is intended
-            to be used from background services and event handlers. Methods do not throw on missing channels
-            and instead log warnings to keep Discord event handling resilient.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.#ctor(Discord.WebSocket.DiscordSocketClient,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Services.MessageService},Libertas.Discord.Adventure.Core.Services.IActionLocalizationService)">
-            <summary>
-            Helper for building and sending adventure-related Discord messages.
-            Encapsulates logic for creating combat components, posting round information, and updating the
-            persistent combat message used to collect player actions.
-            </summary>
-            <remarks>
-            This class resolves the target channel from an <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession"/> and is intended
-            to be used from background services and event handlers. Methods do not throw on missing channels
-            and instead log warnings to keep Discord event handling resilient.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.SendRoundInformationAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Int32,System.DateTimeOffset)">
-            <summary>
-            Sends an initial round information message to the session channel containing a teaser,
-            mob details, and the next-round timestamp.
-            </summary>
-            <param name="session">Session containing channel and mob data.</param>
-            <param name="round">Round number within the current level.</param>
-            <param name="nextRound">Timestamp for when the next round will begin.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.UpdateCombatButtonsAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
-            <summary>
-            Updates the existing persistent combat message's button components to reflect current
-            action counts from <see cref="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.PendingActions"/>.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.SendCombatMessageAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
-            <summary>
-            Sends the combat action buttons as a new message for the session and stores the message id
-            on the provided session so it can be updated later.
-            </summary>
-            <summary>
-            Sends a new combat message containing action buttons for the session and stores the message id
-            on the session for subsequent updates.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.DeleteCombatMessageAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
-            <summary>
-            Deletes the session's stored combat message if one exists and clears the id.
-            This is safe to call even if the id is null.
-            </summary>
-            <summary>
-            Deletes and clears the session's stored combat message id. Safe to call if no id exists.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.UpdateCombatMessageAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
-            <summary>
-            Rebuilds the combat component (refreshing the per-action counts) and updates the existing
-            combat message stored on the session. This is intentionally the same behavior as
-            UpdateCombatButtonsAsync but provided under the name expected by the event handler.
-            </summary>
-            <summary>
-            Rebuilds and applies the combat component to the stored combat message. Provided for
-            compatibility with event handler naming.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.PostRoundResultsAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,Libertas.Discord.Adventure.Core.GameModels.RoundResult,System.DateTimeOffset)">
-            <summary>
-            Posts the compact combat log and a status summary for the completed round to the session channel.
-            </summary>
-            <param name="session">The session the round belongs to.</param>
-            <param name="result">Round result including player/mob states and messages.</param>
-            <param name="nextRound">Timestamp for the next round.</param>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.MobFactoryService">
-            <summary>
-            Service for creating <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState"/> instances from presets and level scaling.
-            Encapsulates logic for randomizing mob stats and selecting unused presets.
-            </summary>
-            <remarks>
-            Used to generate mobs for each round, ensuring variety and appropriate difficulty scaling.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MobFactoryService.#ctor(Libertas.Discord.Adventure.Core.Data.IMobPresetService,Libertas.Discord.Adventure.Core.Services.IRandomNumberGenerator,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Services.MobFactoryService})">
-            <summary>
-            Service for creating <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState"/> instances from presets and level scaling.
-            Encapsulates logic for randomizing mob stats and selecting unused presets.
-            </summary>
-            <remarks>
-            Used to generate mobs for each round, ensuring variety and appropriate difficulty scaling.
-            </remarks>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MobFactoryService.CreateFromPresetAsync(Libertas.Discord.Adventure.Core.GameModels.MobPresetDto,System.Int32)">
-            <summary>
-            Creates a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState"/> from a given preset and level, applying stat randomization and scaling.
-            </summary>
-            <param name="preset">Mob preset template.</param>
-            <param name="level">Dungeon level for scaling stats.</param>
-            <returns>Newly created <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState"/>.</returns>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.MobFactoryService.CreateRandomMobForLevelAsync(System.Int32,System.Collections.Generic.IReadOnlyCollection{System.Int32},System.Threading.CancellationToken)">
-            <summary>
-            Creates a random mob for the given level, excluding specified preset IDs.
-            </summary>
-            <param name="level">Dungeon level for scaling stats.</param>
-            <param name="excludePresetIds">Preset IDs to exclude from selection.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>Newly created <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState"/> or null if no preset is available.</returns>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.Services.SessionEndResult">
-            <summary>
-            Result of ending a session, including level-up information for all players.
-            </summary>
-            <param name="Session">The ended session with final state.</param>
-            <param name="LevelUps">Dictionary mapping player IDs to their skill level-ups during the session.</param>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.Services.SessionEndResult.#ctor(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Collections.Generic.Dictionary{Libertas.Discord.Adventure.Core.GameModels.PlayerId,System.Collections.Generic.List{Libertas.Discord.Adventure.Discord.Data.SkillLevelUp}})">
-            <summary>
-            Result of ending a session, including level-up information for all players.
-            </summary>
-            <param name="Session">The ended session with final state.</param>
-            <param name="LevelUps">Dictionary mapping player IDs to their skill level-ups during the session.</param>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.SessionEndResult.Session">
-            <summary>The ended session with final state.</summary>
-        </member>
-        <member name="P:Libertas.Discord.Adventure.Discord.Services.SessionEndResult.LevelUps">
-            <summary>Dictionary mapping player IDs to their skill level-ups during the session.</summary>
-        </member>
-        <member name="T:Libertas.Discord.Adventure.Discord.SocketMessageComponentExtensions">
-            <summary>
-            Extension methods for parsing Discord component custom IDs for player actions.
-            </summary>
-        </member>
-        <member name="M:Libertas.Discord.Adventure.Discord.SocketMessageComponentExtensions.TryParseActionId(Discord.WebSocket.SocketMessageComponent,Libertas.Discord.Adventure.Core.GameModels.PlayerAction@,System.UInt64@)">
-            <summary>
-            Attempts to parse an action custom id from the Discord component.
-            Expected format: "action-{actionValue}-{channelId}".
-            </summary>
-            <param name="component">Discord message component to parse.</param>
-            <param name="action">Parsed player action enum value.</param>
-            <param name="channelId">Parsed channel ID.</param>
-            <returns>True if parsing succeeded; otherwise false.</returns>
-        </member>
-    </members>
+  <assembly>
+    <name>Libertas.Discord.Adventure.Discord</name>
+  </assembly>
+  <members>
+    <member name="T:Libertas.Discord.Adventure.Discord.Data.IPlayerService">
+      <summary>
+        Service for managing player state during combat sessions.
+        Loads persistent data from the database and calculates combat stats.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.GetOrCreateAsync(Discord.WebSocket.SocketUser,System.Threading.CancellationToken)">
+      <summary>
+        Gets or creates a player state for combat using Discord user information.
+        Loads from database if exists, creates new record if not.
+      </summary>
+      <param name="user">The Discord user.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.GetOrCreateAsync(System.UInt64,System.String,System.Threading.CancellationToken)">
+      <summary>
+        Gets or creates a player state for combat using ID and username.
+        Loads from database if exists, creates new record if not.
+        This overload is useful for testing without Discord dependencies.
+      </summary>
+      <param name="userId">The player's unique ID (Discord user ID or test ID).</param>
+      <param name="username">The player's display name.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.SaveProgressAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerState,System.Int32,System.Boolean,System.Threading.CancellationToken)">
+      <summary>
+        Saves session progress back to the database.
+        Updates XP, gold, kills, deaths, and highest dungeon level.
+        Returns information about any skill level-ups.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.IPlayerService.GetPlayerDataAsync(System.UInt64,System.Threading.CancellationToken)">
+      <summary>
+        Gets a player's persistent state from the repository.
+        Returns a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerState" /> suitable for core usage, or null if not found.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Data.PlayerService">
+      <summary>
+        Implementation of <see cref="T:Libertas.Discord.Adventure.Discord.Data.IPlayerService" /> integrating database persistence with combat state.
+        Handles player creation, stat calculation, and progress saving.
+      </summary>
+      <remarks>
+        Constructs the player service with required dependencies.
+      </remarks>
+      <param name="playerRepository">Repository for player persistence.</param>
+      <param name="progressionService">Service for skill/stat calculations.</param>
+      <param name="logger">Logger for structured logging.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.#ctor(Libertas.Discord.Adventure.Core.Data.IPlayerRepository,Libertas.Discord.Adventure.Core.Services.IPlayerProgressionService,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Data.PlayerService})">
+      <summary>
+        Implementation of <see cref="T:Libertas.Discord.Adventure.Discord.Data.IPlayerService" /> integrating database persistence with combat state.
+        Handles player creation, stat calculation, and progress saving.
+      </summary>
+      <remarks>
+        Constructs the player service with required dependencies.
+      </remarks>
+      <param name="playerRepository">Repository for player persistence.</param>
+      <param name="progressionService">Service for skill/stat calculations.</param>
+      <param name="logger">Logger for structured logging.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.GetOrCreateAsync(Discord.WebSocket.SocketUser,System.Threading.CancellationToken)">
+      <inheritdoc />
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.GetOrCreateAsync(System.UInt64,System.String,System.Threading.CancellationToken)">
+      <inheritdoc />
+      <summary>
+        Gets or creates a player by Discord user ID and username, then calculates combat stats.
+      </summary>
+      <param name="userId">Discord user ID.</param>
+      <param name="username">Discord username.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+      <returns>Player combat state.</returns>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.SaveProgressAsync(Libertas.Discord.Adventure.Core.GameModels.PlayerState,System.Int32,System.Boolean,System.Threading.CancellationToken)">
+      <inheritdoc />
+      <summary>
+        Saves player progress after a session, updating XP, gold, kills, deaths, and detecting level-ups.
+      </summary>
+      <param name="playerState">Player combat state.</param>
+      <param name="dungeonLevel">Dungeon level reached.</param>
+      <param name="died">True if player died during session.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+      <returns>Result containing any skill level-ups.</returns>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.PlayerService.GetPlayerDataAsync(System.UInt64,System.Threading.CancellationToken)">
+      <inheritdoc />
+      <summary>
+        Gets the persisted player state by ID.
+      </summary>
+      <param name="playerId">Player ID.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+      <returns>The player state or null.</returns>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Data.SaveProgressResult">
+      <summary>
+        Result of saving player progress, including any level-ups.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.SaveProgressResult.#ctor(System.Collections.Generic.List{Libertas.Discord.Adventure.Discord.Data.SkillLevelUp})">
+      <summary>
+        Result of saving player progress, including any level-ups.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Data.SkillLevelUp">
+      <summary>
+        Represents a skill level-up event.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Data.SkillLevelUp.#ctor(System.String,System.Int32,System.Int32)">
+      <summary>
+        Represents a skill level-up event.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.DiscordBackgroundService">
+      <summary>
+        Background service that initializes and runs the Discord client and command modules.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.DiscordBackgroundService.#ctor(Microsoft.Extensions.Options.IOptions{Libertas.Discord.Adventure.Discord.DiscordSettings},Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.DiscordBackgroundService},Libertas.Discord.Adventure.Discord.DiscordEventHandler,Discord.WebSocket.DiscordSocketClient,Discord.Commands.CommandService,System.IServiceProvider)">
+      <summary>
+        Background service that initializes and runs the Discord client and command modules.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.DiscordBackgroundService.ExecuteAsync(System.Threading.CancellationToken)">
+      <summary>
+        Starts the Discord client, registers command modules and wires up event handlers.
+        The method blocks until cancellation is requested.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.DiscordBackgroundService.StopAsync(System.Threading.CancellationToken)">
+      <summary>
+        Stops and logs out the Discord client if connected, then delegates to base.StopAsync.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.DiscordEventHandler">
+      <summary>
+        Handles Discord events (messages and button interactions) for the adventure bot.
+        Routes text commands to the command service and combat actions to the session manager.
+      </summary>
+      <remarks>
+        <para>
+          Message handling and button interactions are queued to a background worker
+          to avoid blocking the Discord gateway connection.
+        </para>
+        <para>Button interactions are parsed from custom IDs in the format "action-{actionId}-{channelId}".</para>
+      </remarks>
+      <remarks>
+        Creates a new DiscordEventHandler instance.
+      </remarks>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.DiscordEventHandler.#ctor(Discord.WebSocket.DiscordSocketClient,Discord.Commands.CommandService,Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue,Libertas.Discord.Adventure.Discord.Services.MessageService,Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager,System.IServiceProvider,Microsoft.Extensions.Options.IOptions{Libertas.Discord.Adventure.Discord.DiscordSettings},Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.DiscordEventHandler})">
+      <summary>
+        Handles Discord events (messages and button interactions) for the adventure bot.
+        Routes text commands to the command service and combat actions to the session manager.
+      </summary>
+      <remarks>
+        <para>
+          Message handling and button interactions are queued to a background worker
+          to avoid blocking the Discord gateway connection.
+        </para>
+        <para>Button interactions are parsed from custom IDs in the format "action-{actionId}-{channelId}".</para>
+      </remarks>
+      <remarks>
+        Creates a new DiscordEventHandler instance.
+      </remarks>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.DiscordEventHandler.OnMessageReceivedAsync(Discord.WebSocket.SocketMessage,System.Threading.CancellationToken)">
+      <summary>
+        Handles incoming Discord messages, routing commands to the command service.
+        Non-command messages are ignored.
+      </summary>
+      <param name="message">The received message.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.DiscordEventHandler.OnButtonExecutedAsync(Discord.WebSocket.SocketMessageComponent,System.Threading.CancellationToken)">
+      <summary>
+        Handles combat action button clicks from players.
+        Parses the action from the button's custom ID and records it in the session.
+      </summary>
+      <param name="component">The button interaction component.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.DiscordSettings">
+      <summary>
+        Configuration settings for Discord integration. Bound from configuration (e.g. "Discord" section).
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.DiscordSettings.Token">
+      <summary>
+        Bot token used to login the Discord client.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.DiscordSettings.Prefix">
+      <summary>
+        The prefix used for commands (e.g. !admin say hello).
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Modules.AdminModule">
+      <summary>
+        Discord command module for admin-only commands.
+      </summary>
+    </member>
+    <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdminModule.SayAsync(System.String)">
+      <summary>
+        Echoes the provided message back to the channel.
+      </summary>
+      <param name="text">Message to echo.</param>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Modules.AdventureModule">
+      <summary>
+        Discord command module for starting adventures, running simulations, and viewing player stats.
+        Handles the main adventure loop and player interaction commands.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.#ctor(Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager,Libertas.Discord.Adventure.Discord.Services.MessageService,Libertas.Discord.Adventure.Core.Services.IRandomNumberGenerator,Libertas.Discord.Adventure.Discord.Services.IMobFactoryService,Libertas.Discord.Adventure.Discord.Data.IPlayerService,Libertas.Discord.Adventure.Core.Services.IPlayerProgressionService)">
+      <summary>
+        Discord command module for starting adventures, running simulations, and viewing player stats.
+        Handles the main adventure loop and player interaction commands.
+      </summary>
+    </member>
+    <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.StartAsync">
+      <summary>
+        Starts a new adventure session in the current channel.
+      </summary>
+    </member>
+    <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.SimulateAsync">
+      <summary>
+        Runs a headless combat simulation of 4 players vs respawning mobs.
+      </summary>
+    </member>
+    <member name="M:Libertas.Discord.Adventure.Discord.Modules.AdventureModule.StatsAsync">
+      <summary>
+        Displays the current player's skills, XP, and lifetime statistics.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.QueuedBackgroundService">
+      <summary>
+        Background service that processes queued work items from
+        <see cref="T:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue" />.
+        Ensures CPU/IO-heavy tasks are executed outside Discord event handlers for responsiveness.
+      </summary>
+      <remarks>
+        Uses a single-threaded loop to dequeue and execute work items, logging errors and shutdown events.
+      </remarks>
+      <remarks>
+        Constructs the background service with the required work queue and logger.
+      </remarks>
+      <param name="queue">Work queue to process.</param>
+      <param name="logger">Logger for structured logging.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.QueuedBackgroundService.#ctor(Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.QueuedBackgroundService})">
+      <summary>
+        Background service that processes queued work items from
+        <see cref="T:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue" />.
+        Ensures CPU/IO-heavy tasks are executed outside Discord event handlers for responsiveness.
+      </summary>
+      <remarks>
+        Uses a single-threaded loop to dequeue and execute work items, logging errors and shutdown events.
+      </remarks>
+      <remarks>
+        Constructs the background service with the required work queue and logger.
+      </remarks>
+      <param name="queue">Work queue to process.</param>
+      <param name="logger">Logger for structured logging.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.QueuedBackgroundService.ExecuteAsync(System.Threading.CancellationToken)">
+      <summary>
+        Main execution loop for the background service. Dequeues and runs work items until shutdown.
+      </summary>
+      <param name="stoppingToken">Cancellation token for graceful shutdown.</param>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.ServiceCollectionExtensions">
+      <summary>
+        Extension methods for registering Discord Adventure services and configuration with DI.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.ServiceCollectionExtensions.AddDiscordAdventure(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection,Microsoft.Extensions.Configuration.IConfigurationSection)">
+      <summary>
+        Registers all Discord Adventure services, settings, and dependencies with the DI container.
+      </summary>
+      <param name="services">Service collection to register with.</param>
+      <param name="discordSection">Discord configuration section.</param>
+      <param name="localizationSection">Localization configuration section.</param>
+      <param name="botSection">Bot configuration section.</param>
+      <param name="progressionSection">Progression configuration section.</param>
+      <param name="combatSection">Combat configuration section.</param>
+      <returns>The updated service collection.</returns>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession">
+      <summary>
+        Represents an active adventure session in a Discord channel.
+        Contains all mutable state for an ongoing combat encounter.
+      </summary>
+      <remarks>
+        <para>Sessions are managed per-channel and persist across multiple combat rounds.</para>
+        <para>
+          Access to session state should be synchronized using <see cref="T:System.Threading.SemaphoreSlim" />
+          or the helper extension methods defined in
+          <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions" />.
+        </para>
+      </remarks>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.ChannelId">
+      <summary>
+        The Discord channel ID where this session is active.
+        Used as the primary key for session lookup.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Level">
+      <summary>
+        Current dungeon level (difficulty scaling).
+        Increases after defeating all mobs in the current wave.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Players">
+      <summary>
+        All players in the session, including human players and AI bots.
+        Modified during combat as players join, die, or flee.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Mobs">
+      <summary>
+        All mobs in the current combat encounter.
+        Cleared and repopulated when advancing to a new level.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.PendingActions">
+      <summary>
+        Actions submitted by players for the upcoming round.
+        Keyed by player ID. Cleared after each round resolves.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.LastActivity">
+      <summary>
+        Timestamp of the last activity in this session.
+        Used for timeout detection and cleanup.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.RoundCts">
+      <summary>
+        Cancellation token source for the current round timer.
+        Cancelled when the round ends or session is terminated.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.Semaphore">
+      <summary>
+        Semaphore for thread-safe access to session state.
+        Ensures only one operation modifies the session at a time.
+      </summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.CombatMessageId">
+      <summary>
+        Discord message ID of the current combat status message.
+        Updated each round to show current action counts and party status.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions">
+      <summary>
+        Convenience extensions for acquiring and using per-session locks safely.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions.LockAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager,System.UInt64,System.Func{Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
+      <summary>
+        Lock the session identified by <paramref name="channelId" /> and execute the provided function.
+        Throws if the session is not found.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionExtensions.LockAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
+      <summary>
+        Lock the given session and execute the provided function while holding the session semaphore.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager">
+      <summary>
+        Manages per-channel adventure sessions.
+        Provides thread-safe creation, lookup, action recording, round execution, and session termination.
+      </summary>
+      <remarks>
+        Sessions are stored in the
+        <see cref="P:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.Sessions" /> dictionary keyed by Discord channel ID.
+        Public methods use internal locking to ensure session state is updated safely from concurrent Discord events.
+      </remarks>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.#ctor(Libertas.Discord.Adventure.Core.Services.IGameEngine,Libertas.Discord.Adventure.Discord.Data.IPlayerService,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager})">
+      <summary>
+        Manages per-channel adventure sessions.
+        Provides thread-safe creation, lookup, action recording, round execution, and session termination.
+      </summary>
+      <remarks>
+        Sessions are stored in the
+        <see cref="P:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.Sessions" /> dictionary keyed by Discord channel ID.
+        Public methods use internal locking to ensure session state is updated safely from concurrent Discord events.
+      </remarks>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.Sessions">
+      <summary>
+        Active sessions keyed by Discord channel ID.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.StartSessionAsync(System.UInt64,System.Int32,System.Threading.CancellationToken)">
+      <summary>
+        Starts a new session for the specified channel and level.
+      </summary>
+      <param name="channelId">Discord channel id where the session will run.</param>
+      <param name="level">Starting dungeon level for the session.</param>
+      <param name="cancellationToken">Cancellation token to observe when creating the session.</param>
+      <returns>The created <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession" />.</returns>
+      <exception cref="T:System.InvalidOperationException">Thrown when a session cannot be added for the channel.</exception>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.RecordActionAsync(System.UInt64,Discord.WebSocket.SocketUser,Libertas.Discord.Adventure.Core.GameModels.PlayerAction,System.Threading.CancellationToken)">
+      <summary>
+        Records a player's action for the specified channel using a Discord
+        <see cref="T:Discord.WebSocket.SocketUser" />.
+        Ensures the player entity exists and is added to the session before recording the action.
+      </summary>
+      <param name="channelId">Channel id where the action originated.</param>
+      <param name="user">Discord user who performed the action.</param>
+      <param name="action">Player action to record.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.RecordActionAsync(System.UInt64,Libertas.Discord.Adventure.Core.GameModels.PlayerId,Libertas.Discord.Adventure.Core.GameModels.PlayerAction,System.Threading.CancellationToken)">
+      <summary>
+        Records a player's action for the specified channel using a
+        <see cref="T:Libertas.Discord.Adventure.Core.GameModels.PlayerId" />.
+        Updates the session's pending actions and last activity timestamp.
+      </summary>
+      <param name="channelId">Channel id where the action originated.</param>
+      <param name="playerId">Player identifier.</param>
+      <param name="action">Player action to record.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.ExecuteRoundAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Threading.CancellationToken)">
+      <summary>
+        Executes a single round for the provided session by delegating to the
+        <see cref="T:Libertas.Discord.Adventure.Core.Services.IGameEngine" />.
+        Updates the session state with the returned
+        <see cref="T:Libertas.Discord.Adventure.Core.GameModels.RoundResult" />.
+      </summary>
+      <param name="session">Active session to execute a round for.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+      <returns>The <see cref="T:Libertas.Discord.Adventure.Core.GameModels.RoundResult" /> describing the round outcome.</returns>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.AdventureSessionManager.EndSessionAsync(System.UInt64,System.Threading.CancellationToken)">
+      <summary>
+        Ends and removes the session for the given channel, persists player progress, and returns summary results.
+      </summary>
+      <param name="channelId">Channel id of the session to end.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+      <returns>A <see cref="T:Libertas.Discord.Adventure.Discord.Services.SessionEndResult" /> containing the ended session and any level-ups.</returns>
+      <exception cref="T:System.InvalidOperationException">Thrown if the session could not be removed.</exception>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue">
+      <summary>
+        Simple bounded background work queue used to offload CPU/IO work from Discord event handlers.
+        Stores delegates of the form <c>Func&lt;CancellationToken, Task&gt;</c> and exposes dequeue/queue operations.
+      </summary>
+      <remarks>
+        The queue uses a single reader / multiple writer bounded channel to provide backpressure
+        and to ensure tasks are processed sequentially by a single background worker.
+      </remarks>
+    </member>
+    <member name="M:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue.#ctor(System.Int32)">
+      <summary>
+        Creates a new bounded <see cref="T:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue" /> with the provided capacity.
+      </summary>
+      <param name="capacity">Maximum number of queued work items before backpressure is applied.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue.QueueAsync(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
+      <summary>
+        Enqueues a delegate to be executed by a background consumer. This method waits
+        when the channel is full to provide backpressure.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.BackgroundWorkQueue.DequeueAsync(System.Threading.CancellationToken)">
+      <summary>
+        Dequeues the next work delegate. This call blocks until an item becomes available
+        or the provided cancellation token is triggered.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue">
+      <summary>
+        Lightweight producer/consumer queue used to offload work from Discord event handlers
+        to background consumers.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue.QueueAsync(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
+      <summary>
+        Enqueue a work item to be executed in the background.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.IBackgroundWorkQueue.DequeueAsync(System.Threading.CancellationToken)">
+      <summary>
+        Dequeue a work item. Intended to be used by a dedicated consumer.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.IMobFactoryService">
+      <summary>
+        Factory service responsible for creating <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState" />
+        instances from presets
+        and scaling them for a given dungeon level.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.IMobFactoryService.CreateFromPresetAsync(Libertas.Discord.Adventure.Core.GameModels.MobPresetDto,System.Int32)">
+      <summary>
+        Create a mob from an explicit preset and scale it for the provided level.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.IMobFactoryService.CreateRandomMobForLevelAsync(System.Int32,System.Collections.Generic.IReadOnlyCollection{System.Int32},System.Threading.CancellationToken)">
+      <summary>
+        Choose a preset (optionally excluding some ids) and create a mob scaled for the provided level.
+        Returns null when no preset could be chosen.
+      </summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.MessageService">
+      <summary>
+        Helper for building and sending adventure-related Discord messages.
+        Encapsulates logic for creating combat components, posting round information, and updating the
+        persistent combat message used to collect player actions.
+      </summary>
+      <remarks>
+        This class resolves the target channel from an
+        <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession" /> and is intended
+        to be used from background services and event handlers. Methods do not throw on missing channels
+        and instead log warnings to keep Discord event handling resilient.
+      </remarks>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.#ctor(Discord.WebSocket.DiscordSocketClient,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Services.MessageService},Libertas.Discord.Adventure.Core.Services.IActionLocalizationService)">
+      <summary>
+        Helper for building and sending adventure-related Discord messages.
+        Encapsulates logic for creating combat components, posting round information, and updating the
+        persistent combat message used to collect player actions.
+      </summary>
+      <remarks>
+        This class resolves the target channel from an
+        <see cref="T:Libertas.Discord.Adventure.Discord.Services.AdventureSession" /> and is intended
+        to be used from background services and event handlers. Methods do not throw on missing channels
+        and instead log warnings to keep Discord event handling resilient.
+      </remarks>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.SendRoundInformationAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Int32,System.DateTimeOffset)">
+      <summary>
+        Sends an initial round information message to the session channel containing a teaser,
+        mob details, and the next-round timestamp.
+      </summary>
+      <param name="session">Session containing channel and mob data.</param>
+      <param name="round">Round number within the current level.</param>
+      <param name="nextRound">Timestamp for when the next round will begin.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.UpdateCombatButtonsAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
+      <summary>
+        Updates the existing persistent combat message's button components to reflect current
+        action counts from <see cref="P:Libertas.Discord.Adventure.Discord.Services.AdventureSession.PendingActions" />
+        .
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.SendCombatMessageAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
+      <summary>
+        Sends the combat action buttons as a new message for the session and stores the message id
+        on the provided session so it can be updated later.
+      </summary>
+      <summary>
+        Sends a new combat message containing action buttons for the session and stores the message id
+        on the session for subsequent updates.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.DeleteCombatMessageAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
+      <summary>
+        Deletes the session's stored combat message if one exists and clears the id.
+        This is safe to call even if the id is null.
+      </summary>
+      <summary>
+        Deletes and clears the session's stored combat message id. Safe to call if no id exists.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.UpdateCombatMessageAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession)">
+      <summary>
+        Rebuilds the combat component (refreshing the per-action counts) and updates the existing
+        combat message stored on the session. This is intentionally the same behavior as
+        UpdateCombatButtonsAsync but provided under the name expected by the event handler.
+      </summary>
+      <summary>
+        Rebuilds and applies the combat component to the stored combat message. Provided for
+        compatibility with event handler naming.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MessageService.PostRoundResultsAsync(Libertas.Discord.Adventure.Discord.Services.AdventureSession,Libertas.Discord.Adventure.Core.GameModels.RoundResult,System.DateTimeOffset)">
+      <summary>
+        Posts the compact combat log and a status summary for the completed round to the session channel.
+      </summary>
+      <param name="session">The session the round belongs to.</param>
+      <param name="result">Round result including player/mob states and messages.</param>
+      <param name="nextRound">Timestamp for the next round.</param>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.MobFactoryService">
+      <summary>
+        Service for creating <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState" /> instances from presets and level scaling.
+        Encapsulates logic for randomizing mob stats and selecting unused presets.
+      </summary>
+      <remarks>
+        Used to generate mobs for each round, ensuring variety and appropriate difficulty scaling.
+      </remarks>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MobFactoryService.#ctor(Libertas.Discord.Adventure.Core.Data.IMobPresetService,Libertas.Discord.Adventure.Core.Services.IRandomNumberGenerator,Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.Discord.Services.MobFactoryService})">
+      <summary>
+        Service for creating <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState" /> instances from presets and level scaling.
+        Encapsulates logic for randomizing mob stats and selecting unused presets.
+      </summary>
+      <remarks>
+        Used to generate mobs for each round, ensuring variety and appropriate difficulty scaling.
+      </remarks>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MobFactoryService.CreateFromPresetAsync(Libertas.Discord.Adventure.Core.GameModels.MobPresetDto,System.Int32)">
+      <summary>
+        Creates a <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState" /> from a given preset and level, applying stat randomization and scaling.
+      </summary>
+      <param name="preset">Mob preset template.</param>
+      <param name="level">Dungeon level for scaling stats.</param>
+      <returns>Newly created <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState" />.</returns>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.MobFactoryService.CreateRandomMobForLevelAsync(System.Int32,System.Collections.Generic.IReadOnlyCollection{System.Int32},System.Threading.CancellationToken)">
+      <summary>
+        Creates a random mob for the given level, excluding specified preset IDs.
+      </summary>
+      <param name="level">Dungeon level for scaling stats.</param>
+      <param name="excludePresetIds">Preset IDs to exclude from selection.</param>
+      <param name="cancellationToken">Cancellation token.</param>
+      <returns>Newly created <see cref="T:Libertas.Discord.Adventure.Core.GameModels.MobState" /> or null if no preset is available.</returns>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.Services.SessionEndResult">
+      <summary>
+        Result of ending a session, including level-up information for all players.
+      </summary>
+      <param name="Session">The ended session with final state.</param>
+      <param name="LevelUps">Dictionary mapping player IDs to their skill level-ups during the session.</param>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.Services.SessionEndResult.#ctor(Libertas.Discord.Adventure.Discord.Services.AdventureSession,System.Collections.Generic.Dictionary{Libertas.Discord.Adventure.Core.GameModels.PlayerId,System.Collections.Generic.List{Libertas.Discord.Adventure.Discord.Data.SkillLevelUp}})">
+      <summary>
+        Result of ending a session, including level-up information for all players.
+      </summary>
+      <param name="Session">The ended session with final state.</param>
+      <param name="LevelUps">Dictionary mapping player IDs to their skill level-ups during the session.</param>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.SessionEndResult.Session">
+      <summary>The ended session with final state.</summary>
+    </member>
+    <member name="P:Libertas.Discord.Adventure.Discord.Services.SessionEndResult.LevelUps">
+      <summary>Dictionary mapping player IDs to their skill level-ups during the session.</summary>
+    </member>
+    <member name="T:Libertas.Discord.Adventure.Discord.SocketMessageComponentExtensions">
+      <summary>
+        Extension methods for parsing Discord component custom IDs for player actions.
+      </summary>
+    </member>
+    <member
+      name="M:Libertas.Discord.Adventure.Discord.SocketMessageComponentExtensions.TryParseActionId(Discord.WebSocket.SocketMessageComponent,Libertas.Discord.Adventure.Core.GameModels.PlayerAction@,System.UInt64@)">
+      <summary>
+        Attempts to parse an action custom id from the Discord component.
+        Expected format: "action-{actionValue}-{channelId}".
+      </summary>
+      <param name="component">Discord message component to parse.</param>
+      <param name="action">Parsed player action enum value.</param>
+      <param name="channelId">Parsed channel ID.</param>
+      <returns>True if parsing succeeded; otherwise false.</returns>
+    </member>
+  </members>
 </doc>

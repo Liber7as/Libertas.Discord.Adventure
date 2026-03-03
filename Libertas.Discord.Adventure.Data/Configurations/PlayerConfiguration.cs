@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Libertas.Discord.Adventure.Data.Configurations;
 
 /// <summary>
-/// EF Core configuration for the Player entity.
+///     EF Core configuration for the Player entity.
 /// </summary>
 public class PlayerConfiguration : IEntityTypeConfiguration<Player>
 {
     /// <summary>
-    /// Configure the EF mapping for the <see cref="Player"/> entity including defaults, keys and indexes.
+    ///     Configure the EF mapping for the <see cref="Player" /> entity including defaults, keys and indexes.
     /// </summary>
     public void Configure(EntityTypeBuilder<Player> builder)
     {

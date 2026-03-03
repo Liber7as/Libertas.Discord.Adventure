@@ -5,21 +5,21 @@ using NUnit.Framework;
 namespace Libertas.Discord.Adventure.Core.Tests.TestUtilities;
 
 /// <summary>
-/// Enhanced test runner with detailed output formatting and statistics tracking.
-/// Provides visual output for manual verification of game behavior.
+///     Enhanced test runner with detailed output formatting and statistics tracking.
+///     Provides visual output for manual verification of game behavior.
 /// </summary>
 public class TestGameRunner(IGameEngine engine)
 {
     private readonly IGameEngine _engine = engine ?? throw new ArgumentNullException(nameof(engine));
 
     /// <summary>
-    /// Statistics collected during game execution.
+    ///     Statistics collected during game execution.
     /// </summary>
     public GameStatistics Statistics { get; private set; } = new();
 
     /// <summary>
-    /// Executes rounds until all players are dead or the max number of rounds is reached.
-    /// Collects statistics and outputs detailed round information.
+    ///     Executes rounds until all players are dead or the max number of rounds is reached.
+    ///     Collects statistics and outputs detailed round information.
     /// </summary>
     public async Task<GameResult> ExecuteGameLoopAsync(
         int startLevel,
@@ -105,7 +105,7 @@ public class TestGameRunner(IGameEngine engine)
     }
 
     /// <summary>
-    /// Executes a single round and returns the result. Good for isolated action testing.
+    ///     Executes a single round and returns the result. Good for isolated action testing.
     /// </summary>
     public async Task<RoundResult> ExecuteSingleRoundAsync(
         int level,
@@ -176,6 +176,33 @@ public class TestGameRunner(IGameEngine engine)
 
     #endregion
 
+    #region Legacy Compatibility
+
+    /// <summary>
+    ///     Legacy method for backward compatibility with existing tests.
+    /// </summary>
+    public async Task<int> ExecuteGameLoopUntilPlayersDeadAsync(
+        int startLevel,
+        List<PlayerState> playersList,
+        List<MobState> mobsList,
+        IDictionary<PlayerId, PlayerAction> actions,
+        int maxRounds = 100,
+        Func<int, IEnumerable<PlayerState>, IEnumerable<MobState>, IDictionary<PlayerId, PlayerAction>?>? actionChooser = null,
+        Func<IEnumerable<MobState>, int, List<MobState>?>? respawnFunc = null)
+    {
+        var result = await ExecuteGameLoopAsync(
+            startLevel, playersList, mobsList, actions, maxRounds, actionChooser, respawnFunc, true);
+
+        // Update the mutable lists for backward compatibility
+        playersList.Clear();
+        playersList.AddRange(result.SurvivingPlayers);
+        playersList.AddRange(result.SurvivingBots);
+
+        return result.FinalLevel + 1;
+    }
+
+    #endregion
+
     #region Output Formatting
 
     private static void WriteHeader(string title)
@@ -191,7 +218,7 @@ public class TestGameRunner(IGameEngine engine)
         TestContext.WriteLine("\n  PARTY:");
         foreach (var p in players.Where(p => !p.IsBot))
         {
-            TestContext.WriteLine($"    • {p.Name,-15} HP: {p.CurrentHp,3}/{p.MaxHp,-3}  " +
+            TestContext.WriteLine($"    ï¿½ {p.Name,-15} HP: {p.CurrentHp,3}/{p.MaxHp,-3}  " +
                                   $"ATK:{p.AttackPower.Value,2} MAG:{p.MagicPower.Value,2} " +
                                   $"SPE:{p.SpeechPower.Value,2} DEF:{p.DefensePower.Value,2}");
         }
@@ -202,7 +229,7 @@ public class TestGameRunner(IGameEngine engine)
             TestContext.WriteLine("  COMPANIONS:");
             foreach (var b in bots)
             {
-                TestContext.WriteLine($"    • {b.Name,-15} HP: {b.CurrentHp,3}/{b.MaxHp,-3}  [BOT]");
+                TestContext.WriteLine($"    ï¿½ {b.Name,-15} HP: {b.CurrentHp,3}/{b.MaxHp,-3}  [BOT]");
             }
         }
     }
@@ -212,7 +239,7 @@ public class TestGameRunner(IGameEngine engine)
         TestContext.WriteLine("\n  ENEMIES:");
         foreach (var m in mobs)
         {
-            TestContext.WriteLine($"    • {m.Name,-15} HP: {m.CurrentHp,3}/{m.MaxHp,-3}  ATK:{m.AttackPower.Value,2}");
+            TestContext.WriteLine($"    ï¿½ {m.Name,-15} HP: {m.CurrentHp,3}/{m.MaxHp,-3}  ATK:{m.AttackPower.Value,2}");
         }
     }
 
@@ -240,7 +267,7 @@ public class TestGameRunner(IGameEngine engine)
             TestContext.WriteLine($"? HP: {hpSummary}");
         }
 
-        TestContext.WriteLine($"????????????????????????????????????????????????????????");
+        TestContext.WriteLine("????????????????????????????????????????????????????????");
     }
 
     private static void WriteGameSummary(GameResult result)
@@ -252,19 +279,19 @@ public class TestGameRunner(IGameEngine engine)
         TestContext.WriteLine($"  Total Gold Earned:   {result.TotalGoldEarned:F0}");
 
         TestContext.WriteLine("\n  STATISTICS:");
-        TestContext.WriteLine($"    • Total Rounds:      {result.Statistics.TotalRounds}");
-        TestContext.WriteLine($"    • Total Attacks:     {result.Statistics.TotalAttacks}");
-        TestContext.WriteLine($"    • Critical Hits:     {result.Statistics.CriticalHits}");
-        TestContext.WriteLine($"    • Mobs Killed:       {result.Statistics.MobsKilled}");
-        TestContext.WriteLine($"    • Players Killed:    {result.Statistics.PlayersKilled}");
-        TestContext.WriteLine($"    • Heals Performed:   {result.Statistics.HealsPerformed}");
-        TestContext.WriteLine($"    • Divine Smites:     {result.Statistics.DivineSmites}");
-        TestContext.WriteLine($"    • Successful Escapes:{result.Statistics.SuccessfulEscapes}");
+        TestContext.WriteLine($"    ï¿½ Total Rounds:      {result.Statistics.TotalRounds}");
+        TestContext.WriteLine($"    ï¿½ Total Attacks:     {result.Statistics.TotalAttacks}");
+        TestContext.WriteLine($"    ï¿½ Critical Hits:     {result.Statistics.CriticalHits}");
+        TestContext.WriteLine($"    ï¿½ Mobs Killed:       {result.Statistics.MobsKilled}");
+        TestContext.WriteLine($"    ï¿½ Players Killed:    {result.Statistics.PlayersKilled}");
+        TestContext.WriteLine($"    ï¿½ Heals Performed:   {result.Statistics.HealsPerformed}");
+        TestContext.WriteLine($"    ï¿½ Divine Smites:     {result.Statistics.DivineSmites}");
+        TestContext.WriteLine($"    ï¿½ Successful Escapes:{result.Statistics.SuccessfulEscapes}");
 
         if (result.Statistics.TotalAttacks > 0)
         {
             var critRate = (double)result.Statistics.CriticalHits / result.Statistics.TotalAttacks * 100;
-            TestContext.WriteLine($"    • Crit Rate:         {critRate:F1}%");
+            TestContext.WriteLine($"    ï¿½ Crit Rate:         {critRate:F1}%");
         }
 
         if (result.SurvivingPlayers.Count > 0)
@@ -272,38 +299,11 @@ public class TestGameRunner(IGameEngine engine)
             TestContext.WriteLine("\n  SURVIVORS:");
             foreach (var p in result.SurvivingPlayers)
             {
-                TestContext.WriteLine($"    • {p.Name,-15} HP: {p.CurrentHp}/{p.MaxHp}  Gold: {p.GoldEarned:F0}");
+                TestContext.WriteLine($"    ï¿½ {p.Name,-15} HP: {p.CurrentHp}/{p.MaxHp}  Gold: {p.GoldEarned:F0}");
             }
         }
 
         TestContext.WriteLine(new string('?', 60));
-    }
-
-    #endregion
-
-    #region Legacy Compatibility
-
-    /// <summary>
-    /// Legacy method for backward compatibility with existing tests.
-    /// </summary>
-    public async Task<int> ExecuteGameLoopUntilPlayersDeadAsync(
-        int startLevel,
-        List<PlayerState> playersList,
-        List<MobState> mobsList,
-        IDictionary<PlayerId, PlayerAction> actions,
-        int maxRounds = 100,
-        Func<int, IEnumerable<PlayerState>, IEnumerable<MobState>, IDictionary<PlayerId, PlayerAction>?>? actionChooser = null,
-        Func<IEnumerable<MobState>, int, List<MobState>?>? respawnFunc = null)
-    {
-        var result = await ExecuteGameLoopAsync(
-            startLevel, playersList, mobsList, actions, maxRounds, actionChooser, respawnFunc, verbose: true);
-
-        // Update the mutable lists for backward compatibility
-        playersList.Clear();
-        playersList.AddRange(result.SurvivingPlayers);
-        playersList.AddRange(result.SurvivingBots);
-
-        return result.FinalLevel + 1;
     }
 
     #endregion

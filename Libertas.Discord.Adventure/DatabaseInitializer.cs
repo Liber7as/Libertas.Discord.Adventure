@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 namespace Libertas.Discord.Adventure;
 
 /// <summary>
-/// Hosted service responsible for ensuring the application's database schema is applied on startup.
-/// Runs EF Core migrations. Failures will stop host startup.
+///     Hosted service responsible for ensuring the application's database schema is applied on startup.
+///     Runs EF Core migrations. Failures will stop host startup.
 /// </summary>
 /// <remarks>
-/// Creates a new instance of <see cref="DatabaseInitializer"/>.
+///     Creates a new instance of <see cref="DatabaseInitializer" />.
 /// </remarks>
-/// <param name="dbContextFactory">Factory used to create <see cref="AdventureContext"/> instances.</param>
+/// <param name="dbContextFactory">Factory used to create <see cref="AdventureContext" /> instances.</param>
 /// <param name="logger">Logger used to report status and failures.</param>
 public class DatabaseInitializer(IDbContextFactory<AdventureContext> dbContextFactory, ILogger<DatabaseInitializer> logger) : IHostedService
 {
@@ -23,7 +23,7 @@ public class DatabaseInitializer(IDbContextFactory<AdventureContext> dbContextFa
     private readonly ILogger<DatabaseInitializer> _logger = logger;
 
     /// <summary>
-    /// Called by the host to start this hosted service. Applies any pending EF Core migrations.
+    ///     Called by the host to start this hosted service. Applies any pending EF Core migrations.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token provided by the host.</param>
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -54,7 +54,7 @@ public class DatabaseInitializer(IDbContextFactory<AdventureContext> dbContextFa
     }
 
     /// <summary>
-    /// Called by the host to stop this hosted service. No action required for database initialization.
+    ///     Called by the host to stop this hosted service. No action required for database initialization.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token provided by the host.</param>
     public Task StopAsync(CancellationToken cancellationToken)

@@ -3,20 +3,20 @@ using Libertas.Discord.Adventure.Core.GameModels;
 namespace Libertas.Discord.Adventure.Core.Services.Combat;
 
 /// <summary>
-/// Default implementation of <see cref="ILootDistributor"/>.
-/// Uses the existing Calculator to compute gold and splits among alive human players.
+///     Default implementation of <see cref="ILootDistributor" />.
+///     Uses the existing Calculator to compute gold and splits among alive human players.
 /// </summary>
 /// <summary>
-/// Default implementation of <see cref="ILootDistributor"/>.
-/// Uses the existing Calculator to compute gold and splits among alive human players.
+///     Default implementation of <see cref="ILootDistributor" />.
+///     Uses the existing Calculator to compute gold and splits among alive human players.
 /// </summary>
 public class LootDistributor(ICombatCalculator calculator) : ILootDistributor
 {
     private readonly ICombatCalculator _calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
 
     /// <summary>
-    /// Distributes loot among alive human players. Returns the total gold awarded.
-    /// Remainder from integer division is intentionally lost for fairness.
+    ///     Distributes loot among alive human players. Returns the total gold awarded.
+    ///     Remainder from integer division is intentionally lost for fairness.
     /// </summary>
     public double DistributeLoot(CombatContext<PlayerState> context, MobState mob)
     {

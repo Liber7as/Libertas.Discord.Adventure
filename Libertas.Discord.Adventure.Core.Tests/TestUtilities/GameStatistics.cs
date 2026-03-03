@@ -1,7 +1,7 @@
 namespace Libertas.Discord.Adventure.Core.Tests.TestUtilities;
 
 /// <summary>
-/// Statistics collected during a game run.
+///     Statistics collected during a game run.
 /// </summary>
 public class GameStatistics
 {

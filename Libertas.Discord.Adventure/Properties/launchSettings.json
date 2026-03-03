@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Libertas.Discord.Adventure": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

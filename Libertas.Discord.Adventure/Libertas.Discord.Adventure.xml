@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Libertas.Discord.Adventure</name>
+    </assembly>
+    <members>
+        <member name="T:Libertas.Discord.Adventure.DatabaseInitializer">
+            <summary>
+            Hosted service responsible for ensuring the application's database schema is applied on startup.
+            Runs EF Core migrations. Failures will stop host startup.
+            </summary>
+            <remarks>
+            Creates a new instance of <see cref="T:Libertas.Discord.Adventure.DatabaseInitializer"/>.
+            </remarks>
+            <param name="dbContextFactory">Factory used to create <see cref="T:Libertas.Discord.Adventure.Data.AdventureContext"/> instances.</param>
+            <param name="logger">Logger used to report status and failures.</param>
+        </member>
+        <member name="M:Libertas.Discord.Adventure.DatabaseInitializer.#ctor(Microsoft.EntityFrameworkCore.IDbContextFactory{Libertas.Discord.Adventure.Data.AdventureContext},Microsoft.Extensions.Logging.ILogger{Libertas.Discord.Adventure.DatabaseInitializer})">
+            <summary>
+            Hosted service responsible for ensuring the application's database schema is applied on startup.
+            Runs EF Core migrations. Failures will stop host startup.
+            </summary>
+            <remarks>
+            Creates a new instance of <see cref="T:Libertas.Discord.Adventure.DatabaseInitializer"/>.
+            </remarks>
+            <param name="dbContextFactory">Factory used to create <see cref="T:Libertas.Discord.Adventure.Data.AdventureContext"/> instances.</param>
+            <param name="logger">Logger used to report status and failures.</param>
+        </member>
+        <member name="M:Libertas.Discord.Adventure.DatabaseInitializer.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Called by the host to start this hosted service. Applies any pending EF Core migrations.
+            </summary>
+            <param name="cancellationToken">Cancellation token provided by the host.</param>
+        </member>
+        <member name="M:Libertas.Discord.Adventure.DatabaseInitializer.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Called by the host to stop this hosted service. No action required for database initialization.
+            </summary>
+            <param name="cancellationToken">Cancellation token provided by the host.</param>
+        </member>
+        <member name="T:Libertas.Discord.Adventure.HostBuilderContextExtensions">
+            <summary>
+            Extension methods to configure and register adventure services into the host's
+            <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+        </member>
+        <member name="M:Libertas.Discord.Adventure.HostBuilderContextExtensions.AddAdventure(Microsoft.Extensions.Hosting.HostBuilderContext,Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers adventure services, EF Core context and related configuration sections
+            into the provided <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="hostContext">Host builder context containing configuration.</param>
+            <param name="services">Service collection to configure.</param>
+            <returns>The updated service collection.</returns>
+        </member>
+    </members>
+</doc>

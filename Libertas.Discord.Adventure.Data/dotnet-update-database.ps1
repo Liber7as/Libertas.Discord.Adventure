@@ -1,0 +1,1 @@
+../dotnet-update-database.ps1 -context "AdventureContext" -startupProject "../Libertas.Discord.Adventure/"
